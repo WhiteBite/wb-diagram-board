@@ -10,7 +10,7 @@
         "lint": "eslint src --ext .ts,.tsx"
     },
     "dependencies": {
-        "@whitebite/diagram-converter": "workspace:*",
+        "@whitebite/diagram-converter": "^0.1.0",
         "file-saver": "^2.0.5",
         "hotkeys-js": "^3.13.7",
         "immer": "^10.0.3",
