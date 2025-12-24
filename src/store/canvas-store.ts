@@ -98,6 +98,12 @@ interface CanvasActions {
     group: (ids: string[]) => string;
     ungroup: (groupId: string) => void;
 
+    // Layers
+    renameElement: (id: string, name: string) => void;
+    toggleElementVisibility: (id: string) => void;
+    toggleElementLocked: (id: string) => void;
+    reorderElements: (elementIds: string[], targetIndex: number) => void;
+
     // Frame children management
     updateFrameChildren: (frameId: string) => void;
     addChildToFrame: (frameId: string, childId: string) => void;
@@ -114,6 +120,10 @@ interface CanvasActions {
     // Binding
     bindConnector: (connectorId: string, startBinding: Binding, endBinding: Binding) => void;
     updateConnectorBindings: (elementId: string) => void;
+
+    // Storage
+    markDirty: () => void;
+    markClean: () => void;
 
     // Import/Export
     exportToJSON: () => string;
@@ -644,6 +654,147 @@ export const useCanvasStore = create<CanvasState & CanvasActions>()(
         }),
 
         // =====================================================================
+        // Layers
+        // =====================================================================
+
+        /**
+         * Rename an element
+         * 
+         * Updates the display name of an element. For frames, updates the name property.
+         * For text elements, updates the text content. For other elements, stores a custom name.
+         * 
+         * @param id - ID of the element to rename
+         * @param name - New name for the element
+         * @throws Error if element not found or name is invalid
+         */
+        renameElement: (id, name) => {
+            const state = get();
+            const element = state.elements[id];
+
+            if (!element) {
+                console.error(`Element with ID '${id}' not found`);
+                return;
+            }
+
+            if (!name || name.trim().length === 0) {
+                console.error('Element name cannot be empty');
+                return;
+            }
+
+            const trimmedName = name.trim();
+            const before: Record<string, CanvasElement | null> = { [id]: { ...element } };
+
+            set((draft) => {
+                const el = draft.elements[id];
+                if (!el) return;
+
+                if (el.type === 'frame') {
+                    (el as FrameElement).name = trimmedName;
+                } else if (el.type === 'text') {
+                    el.text = trimmedName;
+                } else if (el.type === 'sticky') {
+                    el.text = trimmedName;
+                } else {
+                    (el as any).customName = trimmedName;
+                }
+                el.updatedAt = Date.now();
+            });
+
+            const after: Record<string, CanvasElement | null> = { [id]: get().elements[id] };
+            get().pushHistory({ type: 'update', elementIds: [id], before, after });
+        },
+
+        /**
+         * Toggle element visibility
+         * 
+         * Toggles the visibility of an element by setting its opacity to 0 or 1.
+         * 
+         * @param id - ID of the element
+         */
+        toggleElementVisibility: (id) => {
+            const state = get();
+            const element = state.elements[id];
+
+            if (!element) {
+                console.error(`Element with ID '${id}' not found`);
+                return;
+            }
+
+            const newOpacity = element.opacity > 0 ? 0 : 1;
+            const before: Record<string, CanvasElement | null> = { [id]: { ...element } };
+
+            set((draft) => {
+                if (draft.elements[id]) {
+                    draft.elements[id].opacity = newOpacity;
+                    draft.elements[id].updatedAt = Date.now();
+                }
+            });
+
+            const after: Record<string, CanvasElement | null> = { [id]: get().elements[id] };
+            get().pushHistory({ type: 'update', elementIds: [id], before, after });
+        },
+
+        /**
+         * Toggle element locked state
+         * 
+         * Toggles whether an element is locked (cannot be edited).
+         * 
+         * @param id - ID of the element
+         */
+        toggleElementLocked: (id) => {
+            const state = get();
+            const element = state.elements[id];
+
+            if (!element) {
+                console.error(`Element with ID '${id}' not found`);
+                return;
+            }
+
+            const newLocked = !element.locked;
+            const before: Record<string, CanvasElement | null> = { [id]: { ...element } };
+
+            set((draft) => {
+                if (draft.elements[id]) {
+                    draft.elements[id].locked = newLocked;
+                    draft.elements[id].updatedAt = Date.now();
+                }
+            });
+
+            const after: Record<string, CanvasElement | null> = { [id]: get().elements[id] };
+            get().pushHistory({ type: 'update', elementIds: [id], before, after });
+        },
+
+        /**
+         * Reorder elements in the z-order
+         * 
+         * Moves elements to a specific position in the element order.
+         * 
+         * @param elementIds - IDs of elements to move
+         * @param targetIndex - Target index in the element order
+         */
+        reorderElements: (elementIds, targetIndex) => {
+            const state = get();
+
+            if (!Array.isArray(elementIds) || elementIds.length === 0) {
+                console.error('Element IDs must be a non-empty array');
+                return;
+            }
+
+            if (targetIndex < 0 || targetIndex > state.elementOrder.length) {
+                console.error(`Target index ${targetIndex} is out of bounds`);
+                return;
+            }
+
+            set((draft) => {
+                // Remove elements from current positions
+                const newOrder = draft.elementOrder.filter((id) => !elementIds.includes(id));
+                // Insert at target position
+                newOrder.splice(targetIndex, 0, ...elementIds);
+                draft.elementOrder = newOrder;
+            });
+        },
+
+        // =====================================================================
         // Alignment
         // =====================================================================
 
@@ -957,6 +1108,34 @@ export const useCanvasStore = create<CanvasState & CanvasActions>()(
             } catch (error) {
                 console.error(`Failed to update route for connector '${connectorId}':`, error);
             }
+        },
+
+        // =====================================================================
+        // Storage
+        // =====================================================================
+
+        /**
+         * Mark the canvas as having unsaved changes
+         * 
+         * This is typically called when elements are modified
+         */
+        markDirty: () => {
+            // Lazy import to avoid circular dependency
+            import('./storage-store').then(({ useStorageStore }) => {
+                useStorageStore.getState().markDirty();
+            }).catch(err => console.error('Failed to mark dirty:', err));
+        },
+
+        /**
+         * Mark the canvas as having no unsaved changes
+         * 
+         * This is typically called after saving
+         */
+        markClean: () => {
+            // Lazy import to avoid circular dependency
+            import('./storage-store').then(({ useStorageStore }) => {
+                useStorageStore.getState().markClean();
+            }).catch(err => console.error('Failed to mark clean:', err));
         },
 
         // =====================================================================
