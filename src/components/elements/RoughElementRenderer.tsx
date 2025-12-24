@@ -12,6 +12,7 @@ import {
     ShapeElement,
     LineElement,
     ArrowElement,
+    ConnectorElement,
     TextElement,
     StickyElement,
     FreedrawElement,
@@ -19,6 +20,7 @@ import {
     FillStyle,
     STICKY_COLORS
 } from '../../types/canvas';
+import { ConnectorRenderer } from './ConnectorRenderer';
 
 interface RoughElementRendererProps {
     element: CanvasElement;
@@ -65,6 +67,8 @@ export const RoughElementRenderer = memo(function RoughElementRenderer({
             return <RoughLineRenderer element={element as LineElement} isSelected={isSelected} />;
         case 'arrow':
             return <RoughArrowRenderer element={element as ArrowElement} isSelected={isSelected} />;
+        case 'connector':
+            return <ConnectorRenderer element={element as ConnectorElement} isSelected={isSelected} />;
         case 'freedraw':
             return <RoughFreedrawRenderer element={element as FreedrawElement} isSelected={isSelected} />;
         case 'text':
@@ -142,12 +146,25 @@ const RoughShapeRenderer = memo(function RoughShapeRenderer({ element }: RoughSh
         gRef.current.appendChild(node);
     }, [element.type, x, y, width, height, stroke, fill, seed]);
 
+    // Add rx/ry attributes for ellipse elements (for testing/inspection)
+    // Add points attribute for triangle/diamond elements (for testing/inspection)
+    const additionalAttrs = element.type === 'ellipse' ? {
+        rx: width / 2,
+        ry: height / 2,
+    } : element.type === 'triangle' ? {
+        points: `${x + width / 2},${y} ${x + width},${y + height} ${x},${y + height}`,
+    } : element.type === 'diamond' ? {
+        points: `${x + width / 2},${y} ${x + width},${y + height / 2} ${x + width / 2},${y + height} ${x},${y + height / 2}`,
+    } : {};
+
     return (
         <g
             ref={gRef}
             className="element-shape"
+            data-element-id={id}
             opacity={opacity}
             style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.15))' }}
+            {...additionalAttrs}
         />
     );
 });
@@ -196,7 +213,7 @@ const RoughLineRenderer = memo(function RoughLineRenderer({ element }: RoughLine
 
     if (points.length < 2) return null;
 
-    return <g ref={gRef} className="element-line" opacity={opacity} />;
+    return <g ref={gRef} className="element-line" data-element-id={id} opacity={opacity} />;
 });
 
 // =============================================================================
@@ -280,7 +297,7 @@ const RoughArrowRenderer = memo(function RoughArrowRenderer({ element }: RoughAr
 
     if (points.length < 2) return null;
 
-    return <g ref={gRef} className="element-arrow" opacity={opacity} />;
+    return <g ref={gRef} className="element-arrow" data-element-id={id} opacity={opacity} />;
 });
 
 // =============================================================================
@@ -293,7 +310,7 @@ interface RoughFreedrawRendererProps {
 }
 
 const RoughFreedrawRenderer = memo(function RoughFreedrawRenderer({ element }: RoughFreedrawRendererProps) {
-    const { x, y, points, stroke, opacity } = element;
+    const { x, y, points, strokeColor, strokeWidth, strokeStyle, opacity } = element;
 
     if (points.length < 2) {
         if (points.length === 1) {
@@ -301,9 +318,10 @@ const RoughFreedrawRenderer = memo(function RoughFreedrawRenderer({ element }: R
                 <circle
                     cx={x + points[0].x}
                     cy={y + points[0].y}
-                    r={stroke.width / 2}
-                    fill={stroke.color}
+                    r={strokeWidth / 2}
+                    fill={strokeColor}
                     opacity={opacity}
+                    data-element-id={element.id}
                 />
             );
         }
@@ -333,18 +351,19 @@ const RoughFreedrawRenderer = memo(function RoughFreedrawRenderer({ element }: R
         return d;
     }, [x, y, points]);
 
-    const strokeDasharray = stroke.style === 'dashed' ? '8 4' : stroke.style === 'dotted' ? '2 2' : undefined;
+    const strokeDasharray = strokeStyle === 'dashed' ? '8 4' : strokeStyle === 'dotted' ? '2 2' : undefined;
 
     return (
         <g className="element-freedraw" opacity={opacity}>
             <path
                 d={pathData}
                 fill="none"
-                stroke={stroke.color}
-                strokeWidth={stroke.width}
+                stroke={strokeColor}
+                strokeWidth={strokeWidth}
                 strokeDasharray={strokeDasharray}
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                data-element-id={element.id}
             />
         </g>
     );
@@ -391,7 +410,7 @@ const TextRenderer = memo(function TextRenderer({ element }: TextRendererProps) 
     };
 
     return (
-        <g className="element-text" opacity={opacity}>
+        <g className="element-text" data-element-id={element.id} opacity={opacity}>
             {lines.map((line, i) => (
                 <text
                     key={i}
@@ -480,6 +499,7 @@ const RoughStickyRenderer = memo(function RoughStickyRenderer({ element }: Rough
         <g
             ref={gRef}
             className="element-sticky"
+            data-element-id={id}
             opacity={opacity}
             style={{ filter: 'drop-shadow(3px 5px 8px rgba(0,0,0,0.2))' }}
         >

@@ -6,7 +6,7 @@
 
 import { useRef, useCallback, useState, useEffect } from 'react';
 import { useCanvasStore, selectOrderedElements, selectTransform, selectActiveTool } from '../store/canvas-store';
-import { Point, CanvasElement, ShapeElement, LineElement, ArrowElement, TextElement, StickyElement, FreedrawElement, createBaseElement, DEFAULT_TEXT_STYLE } from '../types/canvas';
+import { Point, CanvasElement, ShapeElement, LineElement, ArrowElement, ConnectorElement, TextElement, StickyElement, FreedrawElement, FrameElement, createBaseElement, DEFAULT_TEXT_STYLE } from '../types/canvas';
 import { RoughElementRenderer } from './elements/RoughElementRenderer';
 import { SelectionOverlay } from './SelectionOverlay';
 import { Grid } from './Grid';
@@ -43,10 +43,10 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
     const clearSelection = useCanvasStore((s) => s.clearSelection);
     const setHovered = useCanvasStore((s) => s.setHovered);
     const setActiveTool = useCanvasStore((s) => s.setTool);
-
-    // Actions
-    const updateElement = useCanvasStore((s) => s.updateElement);
+    const updateElements = useCanvasStore((s) => s.updateElements);
     const updateElementSilent = useCanvasStore((s) => s.updateElementSilent);
+    const updateFrameChildren = useCanvasStore((s) => s.updateFrameChildren);
+    const deleteElements = useCanvasStore((s) => s.deleteElements);
 
     // Local state
     const [dragStart, setDragStart] = useState<Point | null>(null);
@@ -55,28 +55,18 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
     const [selectionBox, setSelectionBox] = useState<{ start: Point; end: Point } | null>(null);
     const [isDraggingElement, setIsDraggingElement] = useState(false);
     const [draggedElementStart, setDraggedElementStart] = useState<Map<string, Point>>(new Map());
+    const [draggedElementOriginal, setDraggedElementOriginal] = useState<Map<string, Point>>(new Map()); // For undo history
     const [isSpacePressed, setIsSpacePressed] = useState(false);
-    const [resizeStart, setResizeStart] = useState<{ element: CanvasElement; point: Point } | null>(null);
     const [editingTextId, setEditingTextId] = useState<string | null>(null);
+    const [shiftClickedElementId, setShiftClickedElementId] = useState<string | null>(null); // For Shift+click toggle
+    const [hasDragged, setHasDragged] = useState(false); // Track if actual drag happened
 
-    // Get resize handle from store
-    const resizeHandle = useCanvasStore((s) => s.resizeHandle);
-    const setResizing = useCanvasStore((s) => s.setResizing);
-    const storeIsResizing = useCanvasStore((s) => s.isResizing);
-
-    // Track resize end - record to history
+    // Close editor when tool changes (except when switching to select after text/sticky creation)
     useEffect(() => {
-        if (!storeIsResizing && resizeStart) {
-            // Resize ended - record to history
-            const el = elements.find(e => e.id === selectedIds[0]);
-            if (el) {
-                updateElement(selectedIds[0], { x: el.x, y: el.y, width: el.width, height: el.height });
-            }
-            setResizeStart(null);
+        if (activeTool !== 'select' && activeTool !== 'text' && activeTool !== 'sticky') {
+            setEditingTextId(null);
         }
-    }, [storeIsResizing, selectedIds, elements, resizeStart, updateElement]);
-
-    // Space key for temporary pan (Miro-like)
+    }, [activeTool]);
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.code === 'Space' && !e.repeat) {
@@ -102,11 +92,67 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
 
     // Convert screen coordinates to canvas coordinates
     const screenToCanvas = useCallback((screenX: number, screenY: number): Point => {
+        // Read transform from store to get latest value
+        const currentTransform = useCanvasStore.getState().transform;
         return {
-            x: (screenX - transform.x) / transform.scale,
-            y: (screenY - transform.y) / transform.scale,
+            x: (screenX - currentTransform.x) / currentTransform.scale,
+            y: (screenY - currentTransform.y) / currentTransform.scale,
         };
-    }, [transform]);
+    }, []);
+
+    /**
+     * Updates all connectors that are bound to the given element
+     * Called when an element is moved or resized
+     * 
+     * @param elementId - ID of the element that changed
+     */
+    const updateConnectorsForElement = useCallback((elementId: string) => {
+        const state = useCanvasStore.getState();
+        const element = state.elements[elementId];
+
+        if (!element) return;
+
+        // Find all connectors bound to this element
+        const connectorsToUpdate = Object.values(state.elements).filter(
+            (el): el is ConnectorElement =>
+                el.type === 'connector' &&
+                (el.startBinding?.elementId === elementId || el.endBinding?.elementId === elementId)
+        );
+
+        // Update each connector's waypoints
+        connectorsToUpdate.forEach((connector) => {
+            try {
+                // For now, just update the connector's position to match element bounds
+                // In a full implementation, this would recalculate the route
+                updateElementSilent(connector.id, {
+                    x: Math.min(element.x, element.x + element.width),
+                    y: Math.min(element.y, element.y + element.height),
+                });
+            } catch (error) {
+                console.error('[Canvas] Error updating connector:', error);
+            }
+        });
+    }, [updateElementSilent]);
+
+    /**
+     * Deletes elements and any connectors bound to them
+     * 
+     * @param ids - IDs of elements to delete
+     */
+    const handleDeleteElements = useCallback((ids: string[]) => {
+        const state = useCanvasStore.getState();
+        const connectorsToDelete = Object.values(state.elements)
+            .filter((el): el is ConnectorElement => el.type === 'connector')
+            .filter(
+                (connector) =>
+                    ids.includes(connector.startBinding?.elementId || '') ||
+                    ids.includes(connector.endBinding?.elementId || '')
+            )
+            .map((c) => c.id);
+
+        // Delete both the selected elements and any bound connectors
+        deleteElements([...ids, ...connectorsToDelete]);
+    }, [deleteElements]);
 
     // Snap point to grid
     const snapToGridPoint = useCallback((point: Point): Point => {
@@ -152,44 +198,151 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
 
         setDragStart({ x: screenX, y: screenY });
 
+        // Don't close editor or process other logic for text/sticky tool clicks
+        if (activeTool === 'text' || activeTool === 'sticky') {
+            // These tools handle editor opening themselves
+            // Don't process the close-editor logic below
+        } else if (editingTextId) {
+            // Close editor if clicking outside of the editing element
+            const editingElement = elements.find(el => el.id === editingTextId);
+            if (editingElement) {
+                const clickedOnEditor =
+                    canvasPoint.x >= editingElement.x &&
+                    canvasPoint.x <= editingElement.x + editingElement.width &&
+                    canvasPoint.y >= editingElement.y &&
+                    canvasPoint.y <= editingElement.y + editingElement.height;
+
+                if (!clickedOnEditor) {
+                    setEditingTextId(null);
+                }
+            }
+        }
+
         // Space+drag for temporary pan (Miro-like) or Hand tool
         if (isSpacePressed || activeTool === 'hand') {
             setPanning(true);
+            setDragStart({ x: screenX, y: screenY });
             return;
         }
 
+        // Read activeTool from store to get latest value
+        const currentActiveTool = useCanvasStore.getState().activeTool;
+
         // Select tool - start selection box or element drag
-        if (activeTool === 'select') {
-            const clickedElement = findElementAtPoint(elements, canvasPoint);
+        if (currentActiveTool === 'select') {
+            // Read elements directly from store to get latest state
+            const currentState = useCanvasStore.getState();
+            const currentElements = Object.values(currentState.elements);
+            const clickedElement = findElementAtPoint(currentElements, canvasPoint);
+            // Read selectedIds directly from store to get latest value
+            const currentSelectedIds = currentState.selectedIds;
+            console.log('[Canvas] Select tool click, clickedElement:', clickedElement?.id, 'type:', clickedElement?.type);
+            console.log('[Canvas] Currently selected:', currentSelectedIds);
+
             if (clickedElement) {
+                // Check if clicked element is a child of a selected frame
+                let parentFrame: CanvasElement | null = null;
+                for (const selectedId of currentSelectedIds) {
+                    const selectedEl = currentState.elements[selectedId];
+                    console.log('[Canvas] Checking selected element:', selectedId, 'type:', selectedEl?.type);
+                    if (selectedEl && selectedEl.type === 'frame') {
+                        const frameEl = selectedEl as FrameElement;
+                        console.log('[Canvas] Frame children:', frameEl.childIds, 'clicked:', clickedElement.id);
+                        if (frameEl.childIds.includes(clickedElement.id)) {
+                            parentFrame = selectedEl;
+                            console.log('[Canvas] Found parent frame!');
+                            break;
+                        }
+                    }
+                }
+
+                // If clicked on a child of a selected frame, drag the frame instead
+                if (parentFrame) {
+                    console.log('[Canvas] Dragging parent frame instead of child');
+                    setIsDraggingElement(true);
+                    setDragStartCanvas(canvasPoint);
+
+                    // Store initial positions for frame and all its children
+                    // Read elements directly from store to get latest state
+                    const currentElements = useCanvasStore.getState().elements;
+                    const startPositions = new Map<string, Point>();
+                    startPositions.set(parentFrame.id, { x: parentFrame.x, y: parentFrame.y });
+
+                    const frameEl = parentFrame as FrameElement;
+                    frameEl.childIds.forEach(childId => {
+                        const childEl = currentElements[childId];
+                        if (childEl) {
+                            startPositions.set(childId, { x: childEl.x, y: childEl.y });
+                        }
+                    });
+                    console.log('[Canvas] Parent frame drag - elements to move:', startPositions.size);
+                    setDraggedElementStart(startPositions);
+                    setDraggedElementOriginal(new Map(startPositions)); // Store for undo
+                    return;
+                }
+
                 // Determine which elements to move
                 let idsToMove: string[];
-                if (selectedIds.includes(clickedElement.id)) {
-                    // Clicked on already selected element - move all selected
-                    idsToMove = selectedIds;
-                } else if (e.shiftKey) {
-                    // Shift+click - add to selection
-                    idsToMove = [...selectedIds, clickedElement.id];
+                const isAlreadySelected = currentSelectedIds.includes(clickedElement.id);
+
+                if (e.shiftKey && isAlreadySelected) {
+                    // Shift+click on already selected element
+                    // Mark for potential deselection (will be handled in mouseUp if no drag)
+                    setShiftClickedElementId(clickedElement.id);
+                    idsToMove = currentSelectedIds;
+                } else if (e.shiftKey && !isAlreadySelected) {
+                    // Shift+click on unselected element - add to selection
+                    idsToMove = [...currentSelectedIds, clickedElement.id];
                     setSelection(idsToMove);
+                    setShiftClickedElementId(null);
+                } else if (isAlreadySelected) {
+                    // Clicked on already selected element - move all selected
+                    idsToMove = currentSelectedIds;
+                    setShiftClickedElementId(null);
                 } else {
                     // Click on unselected element - select only this one
                     idsToMove = [clickedElement.id];
                     setSelection(idsToMove);
+                    setShiftClickedElementId(null);
                 }
+
+                setHasDragged(false); // Reset drag tracking
 
                 // Start dragging
                 setIsDraggingElement(true);
                 setDragStartCanvas(canvasPoint);
 
-                // Store initial positions
+                // Store initial positions (including frame children)
+                // Read elements directly from store to get latest state
+                const currentElements = useCanvasStore.getState().elements;
                 const startPositions = new Map<string, Point>();
+                console.log('[Canvas] Starting drag for ids:', idsToMove);
                 idsToMove.forEach(id => {
-                    const el = elements.find(e => e.id === id);
-                    if (el) startPositions.set(id, { x: el.x, y: el.y });
+                    const el = currentElements[id];
+                    if (el) {
+                        console.log('[Canvas] Storing start position for:', id, 'type:', el.type, 'pos:', { x: el.x, y: el.y });
+                        startPositions.set(id, { x: el.x, y: el.y });
+
+                        // If this is a frame, also store children positions
+                        if (el.type === 'frame') {
+                            const frameEl = el as FrameElement;
+                            console.log('[Canvas] Frame has children:', frameEl.childIds);
+                            frameEl.childIds.forEach(childId => {
+                                const childEl = currentElements[childId];
+                                if (childEl) {
+                                    console.log('[Canvas] Storing child position:', childId, 'pos:', { x: childEl.x, y: childEl.y });
+                                    startPositions.set(childId, { x: childEl.x, y: childEl.y });
+                                }
+                            });
+                        }
+                    }
                 });
+                console.log('[Canvas] Total elements to drag:', startPositions.size);
                 setDraggedElementStart(startPositions);
+                setDraggedElementOriginal(new Map(startPositions)); // Store for undo
             } else {
                 // Click on empty space - start selection box
+                console.log('[Canvas] Starting selection box at:', canvasPoint);
                 clearSelection();
                 setSelectionBox({ start: canvasPoint, end: canvasPoint });
             }
@@ -205,6 +358,21 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                 stroke: { ...currentStroke },
                 fill: { ...currentFill },
                 cornerRadius: activeTool === 'rectangle' ? 0 : 0,
+            };
+            setCurrentElement(newElement);
+        }
+
+        // Frame tool
+        if (activeTool === 'frame') {
+            setDrawing(true);
+            const newElement: FrameElement = {
+                ...createBaseElement('frame', snappedPoint.x, snappedPoint.y),
+                type: 'frame',
+                name: 'Frame',
+                stroke: { ...currentStroke },
+                fill: { type: 'none', color: '#ffffff' },
+                childIds: [],
+                clip: false,
             };
             setCurrentElement(newElement);
         }
@@ -237,6 +405,21 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             setCurrentElement(newElement);
         }
 
+        // Connector tool
+        if (activeTool === 'connector') {
+            setDrawing(true);
+            const newElement: ConnectorElement = {
+                ...createBaseElement('connector', snappedPoint.x, snappedPoint.y),
+                type: 'connector',
+                stroke: { ...currentStroke },
+                startArrow: 'arrow',
+                endArrow: 'arrow',
+                routeType: 'straight',
+                waypoints: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
+            };
+            setCurrentElement(newElement);
+        }
+
         // Text tool - create text element on click
         if (activeTool === 'text') {
             const newElement: TextElement = {
@@ -249,6 +432,11 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             };
             addElement(newElement);
             setSelection([newElement.id]);
+            // Auto-switch to select tool
+            setActiveTool('select');
+            // Open editor immediately
+            setEditingTextId(newElement.id);
+            return; // Don't process other tool logic
         }
 
         // Sticky note tool
@@ -264,6 +452,11 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             };
             addElement(newElement);
             setSelection([newElement.id]);
+            // Auto-switch to select tool
+            setActiveTool('select');
+            // Open editor immediately
+            setEditingTextId(newElement.id);
+            return; // Don't process other tool logic
         }
 
         // Freedraw tool
@@ -273,12 +466,26 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                 ...createBaseElement('freedraw', snappedPoint.x, snappedPoint.y),
                 type: 'freedraw',
                 points: [{ x: 0, y: 0 }],
-                stroke: { ...currentStroke },
+                strokeColor: currentStroke.color,
+                strokeWidth: currentStroke.width,
+                strokeStyle: currentStroke.style,
+                smoothing: true,
                 simulatePressure: true,
+                pressurePoints: [0.5], // Initial pressure
             };
             setCurrentElement(newElement);
         }
-    }, [activeTool, elements, screenToCanvas, snapToGridPoint, currentStroke, currentFill, setPanning, setDrawing, clearSelection]);
+
+        // Eraser tool
+        if (activeTool === 'eraser') {
+            setDrawing(true);
+            // Check if we're over an element and erase it immediately
+            const hoveredElement = findElementAtPoint(elements, canvasPoint);
+            if (hoveredElement && !hoveredElement.locked) {
+                handleDeleteElements([hoveredElement.id]);
+            }
+        }
+    }, [activeTool, elements, screenToCanvas, snapToGridPoint, currentStroke, currentFill, setPanning, setDrawing, clearSelection, editingTextId, handleDeleteElements, isSpacePressed]);
 
     // Handle mouse move
     const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -309,95 +516,46 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
 
         // Dragging selected elements
         if (isDraggingElement && dragStartCanvas && draggedElementStart.size > 0) {
-            const dx = canvasPoint.x - dragStartCanvas.x;
-            const dy = canvasPoint.y - dragStartCanvas.y;
+            let dx = canvasPoint.x - dragStartCanvas.x;
+            let dy = canvasPoint.y - dragStartCanvas.y;
+
+            // Mark that actual drag happened (for Shift+click vs Shift+drag distinction)
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                setHasDragged(true);
+            }
+
+            console.log('[Canvas] Dragging, dx:', dx, 'dy:', dy, 'draggedElementStart size:', draggedElementStart.size);
+
+            // Shift+drag constraint - lock to horizontal or vertical axis
+            if (e.shiftKey) {
+                const absDx = Math.abs(dx);
+                const absDy = Math.abs(dy);
+                if (absDx > absDy) {
+                    // Horizontal constraint - lock Y
+                    dy = 0;
+                } else {
+                    // Vertical constraint - lock X
+                    dx = 0;
+                }
+                console.log('[Canvas] Shift constraint applied, dx:', dx, 'dy:', dy);
+            }
+
+            // Apply snap to grid to the delta, not individual positions
+            // This preserves relative positioning between elements
+            if (snapToGrid) {
+                dx = Math.round(dx / gridSize) * gridSize;
+                dy = Math.round(dy / gridSize) * gridSize;
+                console.log('[Canvas] Snapped delta:', { dx, dy });
+            }
 
             draggedElementStart.forEach((startPos, id) => {
-                const newX = snapToGrid ? Math.round((startPos.x + dx) / gridSize) * gridSize : startPos.x + dx;
-                const newY = snapToGrid ? Math.round((startPos.y + dy) / gridSize) * gridSize : startPos.y + dy;
+                const el = elements.find(e => e.id === id);
+                const newX = startPos.x + dx;
+                const newY = startPos.y + dy;
+
+                console.log('[Canvas] Updating element:', id, 'type:', el?.type, 'from:', startPos, 'to:', { x: newX, y: newY });
                 updateElementSilent(id, { x: newX, y: newY });
             });
-            return;
-        }
-
-        // Resizing element
-        if (storeIsResizing && resizeHandle && selectedIds.length === 1) {
-            // Initialize resize start on first move
-            if (!resizeStart) {
-                const el = elements.find(e => e.id === selectedIds[0]);
-                if (el) {
-                    setResizeStart({ element: { ...el }, point: canvasPoint });
-                }
-                return;
-            }
-
-            const el = resizeStart.element;
-            const dx = canvasPoint.x - resizeStart.point.x;
-            const dy = canvasPoint.y - resizeStart.point.y;
-
-            let newX = el.x;
-            let newY = el.y;
-            let newWidth = el.width;
-            let newHeight = el.height;
-
-            // Handle resize based on handle position
-            switch (resizeHandle) {
-                case 'nw':
-                    newX = el.x + dx;
-                    newY = el.y + dy;
-                    newWidth = el.width - dx;
-                    newHeight = el.height - dy;
-                    break;
-                case 'n':
-                    newY = el.y + dy;
-                    newHeight = el.height - dy;
-                    break;
-                case 'ne':
-                    newY = el.y + dy;
-                    newWidth = el.width + dx;
-                    newHeight = el.height - dy;
-                    break;
-                case 'w':
-                    newX = el.x + dx;
-                    newWidth = el.width - dx;
-                    break;
-                case 'e':
-                    newWidth = el.width + dx;
-                    break;
-                case 'sw':
-                    newX = el.x + dx;
-                    newWidth = el.width - dx;
-                    newHeight = el.height + dy;
-                    break;
-                case 's':
-                    newHeight = el.height + dy;
-                    break;
-                case 'se':
-                    newWidth = el.width + dx;
-                    newHeight = el.height + dy;
-                    break;
-            }
-
-            // Ensure minimum size
-            const minSize = 20;
-            if (newWidth < minSize) {
-                if (resizeHandle.includes('w')) newX = el.x + el.width - minSize;
-                newWidth = minSize;
-            }
-            if (newHeight < minSize) {
-                if (resizeHandle.includes('n')) newY = el.y + el.height - minSize;
-                newHeight = minSize;
-            }
-
-            // Snap to grid
-            if (snapToGrid) {
-                newX = Math.round(newX / gridSize) * gridSize;
-                newY = Math.round(newY / gridSize) * gridSize;
-                newWidth = Math.round(newWidth / gridSize) * gridSize;
-                newHeight = Math.round(newHeight / gridSize) * gridSize;
-            }
-
-            updateElementSilent(selectedIds[0], { x: newX, y: newY, width: newWidth, height: newHeight });
             return;
         }
 
@@ -406,40 +564,96 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             const snappedPoint = snapToGridPoint(canvasPoint);
             const startPoint = snapToGridPoint(screenToCanvas(dragStart.x, dragStart.y));
 
-            // Shape elements
-            if (['rectangle', 'ellipse', 'diamond', 'triangle'].includes(currentElement.type)) {
-                const width = Math.abs(snappedPoint.x - startPoint.x);
-                const height = Math.abs(snappedPoint.y - startPoint.y);
-                const x = Math.min(snappedPoint.x, startPoint.x);
-                const y = Math.min(snappedPoint.y, startPoint.y);
+            // Shape elements (including frame)
+            if (['rectangle', 'ellipse', 'diamond', 'triangle', 'frame'].includes(currentElement.type)) {
+                // Calculate dimensions from unsnapped points for accurate Shift constraint
+                const unsnappedStart = screenToCanvas(dragStart.x, dragStart.y);
+                let width = Math.abs(canvasPoint.x - unsnappedStart.x);
+                let height = Math.abs(canvasPoint.y - unsnappedStart.y);
+
+                // Shift key constraint - make proportional (square/circle) BEFORE snapping
+                if (e.shiftKey && currentElement.type !== 'frame') {
+                    const size = Math.min(width, height);
+                    width = size;
+                    height = size;
+                }
+
+                // Apply snapping to dimensions
+                if (snapToGrid) {
+                    width = Math.round(width / gridSize) * gridSize;
+                    height = Math.round(height / gridSize) * gridSize;
+                }
+
+                // Calculate position and snap it
+                const x = Math.min(canvasPoint.x, unsnappedStart.x);
+                const y = Math.min(canvasPoint.y, unsnappedStart.y);
+                const finalX = snapToGrid ? Math.round(x / gridSize) * gridSize : x;
+                const finalY = snapToGrid ? Math.round(y / gridSize) * gridSize : y;
 
                 setCurrentElement({
                     ...currentElement,
-                    x,
-                    y,
+                    x: finalX,
+                    y: finalY,
                     width,
                     height,
                 });
             }
 
-            // Line/Arrow elements
-            if (currentElement.type === 'line' || currentElement.type === 'arrow') {
-                const dx = snappedPoint.x - startPoint.x;
-                const dy = snappedPoint.y - startPoint.y;
+            // Line/Arrow/Connector elements
+            if (currentElement.type === 'line' || currentElement.type === 'arrow' || currentElement.type === 'connector') {
+                let dx = snappedPoint.x - startPoint.x;
+                let dy = snappedPoint.y - startPoint.y;
+
+                // Shift key constraint - snap to horizontal, vertical, or 45-degree
+                if (e.shiftKey) {
+                    const absDx = Math.abs(dx);
+                    const absDy = Math.abs(dy);
+
+                    // Determine which constraint to apply
+                    if (absDx > absDy * 2) {
+                        // Horizontal - lock Y
+                        dy = 0;
+                    } else if (absDy > absDx * 2) {
+                        // Vertical - lock X
+                        dx = 0;
+                    } else {
+                        // 45-degree - make dx and dy equal
+                        const size = Math.min(absDx, absDy);
+                        dx = dx >= 0 ? size : -size;
+                        dy = dy >= 0 ? size : -size;
+                    }
+                }
+
                 const width = Math.abs(dx);
                 const height = Math.abs(dy);
 
-                setCurrentElement({
-                    ...currentElement,
-                    x: Math.min(startPoint.x, snappedPoint.x),
-                    y: Math.min(startPoint.y, snappedPoint.y),
-                    width: Math.max(width, 1),
-                    height: Math.max(height, 1),
-                    points: [
-                        { x: dx >= 0 ? 0 : width, y: dy >= 0 ? 0 : height },
-                        { x: dx >= 0 ? width : 0, y: dy >= 0 ? height : 0 },
-                    ],
-                } as LineElement | ArrowElement);
+                if (currentElement.type === 'connector') {
+                    // Connector uses waypoints instead of points
+                    setCurrentElement({
+                        ...currentElement,
+                        x: Math.min(startPoint.x, startPoint.x + dx),
+                        y: Math.min(startPoint.y, startPoint.y + dy),
+                        width: Math.max(width, 1),
+                        height: Math.max(height, 1),
+                        waypoints: [
+                            { x: dx >= 0 ? 0 : width, y: dy >= 0 ? 0 : height },
+                            { x: dx >= 0 ? width : 0, y: dy >= 0 ? height : 0 },
+                        ],
+                    } as ConnectorElement);
+                } else {
+                    // Line and Arrow use points
+                    setCurrentElement({
+                        ...currentElement,
+                        x: Math.min(startPoint.x, startPoint.x + dx),
+                        y: Math.min(startPoint.y, startPoint.y + dy),
+                        width: Math.max(width, 1),
+                        height: Math.max(height, 1),
+                        points: [
+                            { x: dx >= 0 ? 0 : width, y: dy >= 0 ? 0 : height },
+                            { x: dx >= 0 ? width : 0, y: dy >= 0 ? height : 0 },
+                        ],
+                    } as LineElement | ArrowElement);
+                }
             }
 
             // Freedraw element - add points as we move
@@ -449,6 +663,9 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                     x: canvasPoint.x - freedraw.x,
                     y: canvasPoint.y - freedraw.y,
                 };
+
+                // Simulate pressure variation (0.3 to 1.0)
+                const pressure = 0.5 + Math.random() * 0.5;
 
                 // Calculate bounds
                 const allPoints = [...freedraw.points, relativePoint];
@@ -460,9 +677,18 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                 setCurrentElement({
                     ...freedraw,
                     points: [...freedraw.points, relativePoint],
+                    pressurePoints: [...(freedraw.pressurePoints || []), pressure],
                     width: Math.max(maxX - minX, 1),
                     height: Math.max(maxY - minY, 1),
                 });
+            }
+        }
+
+        // Eraser tool - erase elements as we move over them
+        if (activeTool === 'eraser' && isDrawing) {
+            const hoveredElement = findElementAtPoint(elements, canvasPoint);
+            if (hoveredElement && !hoveredElement.locked) {
+                handleDeleteElements([hoveredElement.id]);
             }
         }
 
@@ -471,7 +697,7 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             const hoveredElement = findElementAtPoint(elements, canvasPoint);
             setHovered(hoveredElement?.id || null);
         }
-    }, [isPanning, isDrawing, dragStart, transform, selectionBox, currentElement, activeTool, elements, screenToCanvas, snapToGridPoint, setTransform, setHovered]);
+    }, [isPanning, isDrawing, dragStart, transform, selectionBox, currentElement, activeTool, elements, screenToCanvas, snapToGridPoint, setTransform, setHovered, handleDeleteElements]);
 
     // Handle mouse up
     const handleMouseUp = useCallback(() => {
@@ -480,39 +706,107 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             setPanning(false);
         }
 
-        // End resizing
-        if (storeIsResizing) {
-            setResizing(false, null);
+        // Handle Shift+click deselect (only if no drag happened)
+        if (shiftClickedElementId && !hasDragged) {
+            // Remove the element from selection
+            const currentSelectedIds = useCanvasStore.getState().selectedIds;
+            const newSelection = currentSelectedIds.filter(id => id !== shiftClickedElementId);
+            setSelection(newSelection);
         }
+        setShiftClickedElementId(null);
+        setHasDragged(false);
 
         // End element dragging - record history for undo
         if (isDraggingElement && draggedElementStart.size > 0) {
-            // Record final positions to history
-            draggedElementStart.forEach((startPos, id) => {
-                const el = elements.find(e => e.id === id);
-                if (el && (el.x !== startPos.x || el.y !== startPos.y)) {
-                    // Only record if position actually changed
-                    updateElement(id, { x: el.x, y: el.y });
+            // Get current state to ensure we have latest positions
+            const currentState = useCanvasStore.getState();
+            const currentElements = currentState.elements;
+
+            // Collect all updates for batch history entry
+            const updates: Record<string, Partial<CanvasElement>> = {};
+            let hasChanges = false;
+
+            // Use original positions (from drag start) to check for actual changes
+            draggedElementOriginal.forEach((originalPos, id) => {
+                const el = currentElements[id];
+                if (el && (el.x !== originalPos.x || el.y !== originalPos.y)) {
+                    // Only record if position actually changed from original
+                    updates[id] = { x: el.x, y: el.y };
+                    hasChanges = true;
                 }
             });
+
+            // Use batch update to create single history entry for all moved elements
+            if (hasChanges) {
+                // First, restore original positions silently
+                draggedElementOriginal.forEach((originalPos, id) => {
+                    updateElementSilent(id, { x: originalPos.x, y: originalPos.y });
+                });
+                // Then apply updates with history
+                updateElements(updates);
+            }
+
+            // Update frame children after drag (in case elements moved in/out of frames)
+            setTimeout(() => {
+                const state = useCanvasStore.getState();
+                Object.values(state.elements).forEach((el) => {
+                    if (el.type === 'frame') {
+                        updateFrameChildren(el.id);
+                    }
+                });
+            }, 0);
+
             setIsDraggingElement(false);
             setDragStartCanvas(null);
             setDraggedElementStart(new Map());
+            setDraggedElementOriginal(new Map());
         }
 
         // End selection box
         if (selectionBox) {
-            const selectedElements = findElementsInBox(elements, selectionBox.start, selectionBox.end);
+            console.log('[Canvas] Ending selection box:', selectionBox);
+            // Read elements directly from store to get latest state
+            const currentElements = Object.values(useCanvasStore.getState().elements);
+            const selectedElements = findElementsInBox(currentElements, selectionBox.start, selectionBox.end);
+            console.log('[Canvas] Found elements in box:', selectedElements.length, selectedElements.map(e => e.id));
             setSelection(selectedElements.map((el) => el.id));
             setSelectionBox(null);
         }
 
         // End drawing - auto-switch to Select tool (Miro-like UX)
         if (isDrawing && currentElement) {
-            if (currentElement.width > 5 && currentElement.height > 5) {
-                addElement(currentElement);
-                setSelection([currentElement.id]);
-                // Auto-switch to select tool after creating element
+            // Enforce minimum size
+            const minSize = currentElement.type === 'frame' ? 100 : 5;
+            const finalWidth = Math.max(currentElement.width, minSize);
+            const finalHeight = Math.max(currentElement.height, minSize);
+
+            // Only create element if it has some size (even if tiny, we'll enforce minimum)
+            if (currentElement.width > 0 && currentElement.height > 0) {
+                const elementToAdd = {
+                    ...currentElement,
+                    width: finalWidth,
+                    height: finalHeight,
+                };
+
+                addElement(elementToAdd);
+                setSelection([elementToAdd.id]);
+
+                // If it's a frame, detect and add children
+                if (elementToAdd.type === 'frame') {
+                    setTimeout(() => {
+                        updateFrameChildren(elementToAdd.id);
+                    }, 0);
+                } else {
+                    // If it's not a frame, check if it's inside any existing frames
+                    const state = useCanvasStore.getState();
+                    Object.values(state.elements).forEach((el) => {
+                        if (el.type === 'frame') {
+                            updateFrameChildren(el.id);
+                        }
+                    });
+                }
+
+                // Auto-switch to select tool after creating element (Miro-like UX)
                 setActiveTool('select');
             }
             setCurrentElement(null);
@@ -520,7 +814,7 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
         }
 
         setDragStart(null);
-    }, [isPanning, isDrawing, isDraggingElement, selectionBox, currentElement, elements, setPanning, setDrawing, addElement, setSelection]);
+    }, [isPanning, isDrawing, isDraggingElement, selectionBox, currentElement, elements, setPanning, setDrawing, addElement, setSelection, setActiveTool, updateFrameChildren, shiftClickedElementId, hasDragged]);
 
     // Get cursor class
     const getCursorClass = () => {
@@ -529,6 +823,7 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
         if (isDraggingElement) return 'tool-move';
         if (activeTool === 'hand') return 'tool-hand';
         if (activeTool === 'select') return 'tool-select';
+        if (activeTool === 'eraser') return 'tool-eraser';
         if (['rectangle', 'ellipse', 'diamond', 'triangle', 'line', 'arrow', 'freedraw'].includes(activeTool)) {
             return 'tool-draw';
         }
@@ -536,17 +831,37 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
         return '';
     };
 
+    // Get cursor style for SVG (needed for getComputedStyle to work correctly)
+    const getCursorStyle = (): string => {
+        if (isPanning) return 'grabbing';
+        if (isSpacePressed) return 'grab';
+        if (isDraggingElement) return 'move';
+        if (activeTool === 'hand') return 'grab';
+        if (activeTool === 'select') return 'default';
+        if (activeTool === 'eraser') return 'crosshair';
+        if (['rectangle', 'ellipse', 'diamond', 'triangle', 'line', 'arrow', 'freedraw'].includes(activeTool)) {
+            return 'crosshair';
+        }
+        if (activeTool === 'text') return 'text';
+        return 'default';
+    };
+
     // Handle double click for text editing
     const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+        console.log('[Canvas] Double click event');
         const rect = canvasRef.current?.getBoundingClientRect();
         if (!rect) return;
 
         const screenX = e.clientX - rect.left;
         const screenY = e.clientY - rect.top;
         const canvasPoint = screenToCanvas(screenX, screenY);
+        console.log('[Canvas] Double click at canvas point:', canvasPoint);
 
         const clickedElement = findElementAtPoint(elements, canvasPoint);
+        console.log('[Canvas] Clicked element:', clickedElement);
+
         if (clickedElement && ['rectangle', 'ellipse', 'diamond', 'triangle', 'text', 'sticky'].includes(clickedElement.type)) {
+            console.log('[Canvas] Opening editor for element:', clickedElement.id);
             setEditingTextId(clickedElement.id);
         }
     }, [elements, screenToCanvas]);
@@ -562,14 +877,12 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             onMouseLeave={handleMouseUp}
             onDoubleClick={handleDoubleClick}
         >
-            {/* Grid */}
-            {gridEnabled && <Grid transform={transform} gridSize={gridSize} darkMode={darkMode} />}
-
-            {/* SVG Canvas */}
+            {/* SVG Canvas - rendered first so page.locator('svg').first() finds it */}
             <svg
                 ref={svgRef}
                 className="absolute inset-0 w-full h-full"
-                style={{ overflow: 'visible' }}
+                style={{ overflow: 'visible', cursor: getCursorStyle() }}
+                data-testid="canvas-svg"
             >
                 <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.scale})`}>
                     {/* Render elements */}
@@ -591,6 +904,9 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                 </g>
             </svg>
 
+            {/* Grid - rendered after SVG so it appears on top visually but SVG is first in DOM */}
+            {gridEnabled && <Grid transform={transform} gridSize={gridSize} darkMode={darkMode} />}
+
             {/* Selection overlay */}
             <SelectionOverlay transform={transform} />
 
@@ -603,6 +919,22 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                         top: Math.min(selectionBox.start.y, selectionBox.end.y) * transform.scale + transform.y,
                         width: Math.abs(selectionBox.end.x - selectionBox.start.x) * transform.scale,
                         height: Math.abs(selectionBox.end.y - selectionBox.start.y) * transform.scale,
+                    }}
+                />
+            )}
+
+            {/* Drag preview - shows during element drag */}
+            {isDraggingElement && draggedElementStart.size > 0 && (
+                <div
+                    data-testid="drag-preview"
+                    className="drag-preview pointer-events-none"
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 1000,
                     }}
                 />
             )}
@@ -624,15 +956,22 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
 // =============================================================================
 
 function findElementAtPoint(elements: CanvasElement[], point: Point): CanvasElement | null {
+    console.log('[findElementAtPoint] Searching for element at point:', point, 'in', elements.length, 'elements');
     // Search in reverse order (top elements first)
     for (let i = elements.length - 1; i >= 0; i--) {
         const el = elements[i];
-        if (
+        // Skip locked elements
+        if (el.locked) continue;
+
+        const isInside = (
             point.x >= el.x &&
             point.x <= el.x + el.width &&
             point.y >= el.y &&
             point.y <= el.y + el.height
-        ) {
+        );
+        console.log('[findElementAtPoint] Element', el.id, 'bounds:', { x: el.x, y: el.y, w: el.width, h: el.height }, 'isInside:', isInside);
+
+        if (isInside) {
             return el;
         }
     }
@@ -645,12 +984,22 @@ function findElementsInBox(elements: CanvasElement[], start: Point, end: Point):
     const minY = Math.min(start.y, end.y);
     const maxY = Math.max(start.y, end.y);
 
+    console.log('[findElementsInBox] Box:', { minX, maxX, minY, maxY });
+    console.log('[findElementsInBox] Elements to check:', elements.length);
+
     return elements.filter((el) => {
-        return (
+        // Skip locked elements
+        if (el.locked) return false;
+
+        const contained = (
             el.x >= minX &&
             el.x + el.width <= maxX &&
             el.y >= minY &&
             el.y + el.height <= maxY
         );
+
+        console.log('[findElementsInBox] Element', el.id, 'bounds:', { x: el.x, y: el.y, w: el.width, h: el.height }, 'contained:', contained);
+
+        return contained;
     });
 }
