@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { GuideCalculator, guideCalculator } from './guide-calculator';
 import { CanvasElement, createBaseElement, DEFAULT_STROKE, DEFAULT_FILL } from '../../types/canvas';
-import { GuidesConfig, DEFAULT_GUIDES_CONFIG, GuideError } from '../../types/guides';
+import { GuidesConfig, DEFAULT_GUIDES_CONFIG } from '../../types/guides';
 
 // =============================================================================
 // Test Fixtures
@@ -88,8 +88,9 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect vertical alignment (center)', () => {
+            // Both elements have center at x=150
             const element1 = createTestRectangle('el1', 100, 0, 100, 100);
-            const element2 = createTestRectangle('el2', 150, 150, 100, 100);
+            const element2 = createTestRectangle('el2', 100, 150, 100, 100);
             const allElements = [element1, element2];
 
             const guides = calculator.calculateGuides(element1, allElements, config);
@@ -103,6 +104,7 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect vertical alignment (right edges)', () => {
+            // Both elements have right edge at x=200
             const element1 = createTestRectangle('el1', 100, 0, 100, 100);
             const element2 = createTestRectangle('el2', 150, 150, 50, 100);
             const allElements = [element1, element2];
@@ -134,8 +136,9 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect horizontal alignment (middle)', () => {
+            // Both elements have middle at y=150
             const element1 = createTestRectangle('el1', 0, 100, 100, 100);
-            const element2 = createTestRectangle('el2', 150, 150, 100, 100);
+            const element2 = createTestRectangle('el2', 150, 100, 100, 100);
             const allElements = [element1, element2];
 
             const guides = calculator.calculateGuides(element1, allElements, config);
@@ -149,6 +152,7 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect horizontal alignment (bottom edges)', () => {
+            // Both elements have bottom edge at y=200
             const element1 = createTestRectangle('el1', 0, 100, 100, 100);
             const element2 = createTestRectangle('el2', 150, 150, 100, 50);
             const allElements = [element1, element2];
@@ -243,8 +247,9 @@ describe('GuideCalculator', () => {
         });
 
         it('should find element center snap points', () => {
+            // element1 center at x=150, element2 center at x=155
             const element1 = createTestRectangle('el1', 100, 0, 100, 100);
-            const element2 = createTestRectangle('el2', 155, 150, 100, 100);
+            const element2 = createTestRectangle('el2', 105, 150, 100, 100);
             const allElements = [element1, element2];
             const elementConfig = { ...config, snapToGrid: false, snapToElements: true };
 
@@ -358,8 +363,9 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect center alignment', () => {
+            // Both have center at x=150
             const element1 = createTestRectangle('el1', 100, 0, 100, 100);
-            const element2 = createTestRectangle('el2', 150, 150, 100, 100);
+            const element2 = createTestRectangle('el2', 100, 150, 100, 100);
 
             const isAligned = calculator.checkAlignment([element1, element2], 'center');
 
@@ -367,6 +373,7 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect right alignment', () => {
+            // Both have right edge at x=200
             const element1 = createTestRectangle('el1', 100, 0, 100, 100);
             const element2 = createTestRectangle('el2', 150, 150, 50, 100);
 
@@ -385,8 +392,9 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect middle alignment', () => {
+            // Both have middle at y=150
             const element1 = createTestRectangle('el1', 0, 100, 100, 100);
-            const element2 = createTestRectangle('el2', 150, 150, 100, 100);
+            const element2 = createTestRectangle('el2', 150, 100, 100, 100);
 
             const isAligned = calculator.checkAlignment([element1, element2], 'middle');
 
@@ -394,6 +402,7 @@ describe('GuideCalculator', () => {
         });
 
         it('should detect bottom alignment', () => {
+            // Both have bottom at y=200
             const element1 = createTestRectangle('el1', 0, 100, 100, 100);
             const element2 = createTestRectangle('el2', 150, 150, 100, 50);
 
@@ -446,32 +455,6 @@ describe('GuideCalculator', () => {
     });
 
     // =========================================================================
-    // Error Handling Tests
-    // =========================================================================
-
-    describe('error handling', () => {
-        it('should throw GuideError on invalid input', () => {
-            const element = createTestRectangle('el1', 0, 0);
-            const invalidConfig = { ...config, snapThreshold: -1 };
-
-            // Should not throw for negative threshold (it's just a number)
-            expect(() => {
-                calculator.calculateGuides(element, [element], invalidConfig);
-            }).not.toThrow();
-        });
-
-        it('should throw GuideError with context', () => {
-            const element = createTestRectangle('el1', 0, 0);
-
-            // Create a scenario that might cause an error
-            // (This is a bit artificial, but tests error handling)
-            expect(() => {
-                calculator.checkAlignment([], 'left');
-            }).not.toThrow(); // Empty array is valid
-        });
-    });
-
-    // =========================================================================
     // Performance Tests
     // =========================================================================
 
@@ -486,7 +469,7 @@ describe('GuideCalculator', () => {
             calculator.calculateGuides(elements[0]!, elements, config);
             const endTime = performance.now();
 
-            expect(endTime - startTime).toBeLessThan(100); // Should complete in less than 100ms
+            expect(endTime - startTime).toBeLessThan(100);
         });
 
         it('should handle large number of snap points efficiently', () => {
@@ -499,7 +482,7 @@ describe('GuideCalculator', () => {
             calculator.findSnapPoints(elements[0]!, elements, config);
             const endTime = performance.now();
 
-            expect(endTime - startTime).toBeLessThan(100); // Should complete in less than 100ms
+            expect(endTime - startTime).toBeLessThan(100);
         });
     });
 

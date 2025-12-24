@@ -33,34 +33,6 @@ function getElementBounds(element: CanvasElement): Bounds {
 }
 
 /**
- * Get bounds of multiple elements
- * @param elements - Array of canvas elements
- * @returns Combined bounds or null if empty
- */
-function getElementsBounds(elements: readonly CanvasElement[]): Bounds | null {
-    if (elements.length === 0) return null;
-
-    let minX = Infinity;
-    let minY = Infinity;
-    let maxX = -Infinity;
-    let maxY = -Infinity;
-
-    elements.forEach((el) => {
-        minX = Math.min(minX, el.x);
-        minY = Math.min(minY, el.y);
-        maxX = Math.max(maxX, el.x + el.width);
-        maxY = Math.max(maxY, el.y + el.height);
-    });
-
-    return {
-        x: minX,
-        y: minY,
-        width: maxX - minX,
-        height: maxY - minY,
-    };
-}
-
-/**
  * Check if two numbers are approximately equal within threshold
  * @param a - First number
  * @param b - Second number
@@ -369,27 +341,88 @@ export class GuideCalculator {
         config: GuidesConfig
     ): Point {
         try {
-            const snapPoints = this.findSnapPoints(element, allElements, config);
             let snappedX = targetX;
             let snappedY = targetY;
+            const threshold = config.snapThreshold;
 
-            // Find closest snap point for X
-            let minXDistance = config.snapThreshold;
-            snapPoints.forEach((point) => {
-                if (point.x !== undefined && point.distance < minXDistance) {
-                    snappedX = point.x;
-                    minXDistance = point.distance;
-                }
-            });
+            // Grid snap points
+            if (config.snapToGrid) {
+                const gridSize = config.gridSize;
+                const gridX = Math.round(targetX / gridSize) * gridSize;
+                const gridY = Math.round(targetY / gridSize) * gridSize;
 
-            // Find closest snap point for Y
-            let minYDistance = config.snapThreshold;
-            snapPoints.forEach((point) => {
-                if (point.y !== undefined && point.distance < minYDistance) {
-                    snappedY = point.y;
-                    minYDistance = point.distance;
+                const gridXDistance = Math.abs(targetX - gridX);
+                const gridYDistance = Math.abs(targetY - gridY);
+
+                if (gridXDistance <= threshold) {
+                    snappedX = gridX;
                 }
-            });
+
+                if (gridYDistance <= threshold) {
+                    snappedY = gridY;
+                }
+            }
+
+            // Element snap points
+            if (config.snapToElements) {
+                const otherElements = allElements.filter((el) => el.id !== element.id);
+                let minXDistance = threshold;
+                let minYDistance = threshold;
+
+                otherElements.forEach((other) => {
+                    const otherBounds = getElementBounds(other);
+
+                    // Left edge
+                    const leftDistance = Math.abs(snappedX - otherBounds.x);
+                    if (leftDistance < minXDistance) {
+                        snappedX = otherBounds.x;
+                        minXDistance = leftDistance;
+                    }
+
+                    // Right edge
+                    const rightDistance = Math.abs(
+                        snappedX + element.width - (otherBounds.x + otherBounds.width)
+                    );
+                    if (rightDistance < minXDistance) {
+                        snappedX = otherBounds.x + otherBounds.width - element.width;
+                        minXDistance = rightDistance;
+                    }
+
+                    // Center X
+                    const elementCenterX = snappedX + element.width / 2;
+                    const otherCenterX = otherBounds.x + otherBounds.width / 2;
+                    const centerXDistance = Math.abs(elementCenterX - otherCenterX);
+                    if (centerXDistance < minXDistance) {
+                        snappedX = otherCenterX - element.width / 2;
+                        minXDistance = centerXDistance;
+                    }
+
+                    // Top edge
+                    const topDistance = Math.abs(snappedY - otherBounds.y);
+                    if (topDistance < minYDistance) {
+                        snappedY = otherBounds.y;
+                        minYDistance = topDistance;
+                    }
+
+                    // Bottom edge
+                    const bottomDistance = Math.abs(
+                        snappedY + element.height - (otherBounds.y + otherBounds.height)
+                    );
+                    if (bottomDistance < minYDistance) {
+                        snappedY = otherBounds.y + otherBounds.height - element.height;
+                        minYDistance = bottomDistance;
+                    }
+
+                    // Center Y
+                    const elementCenterY = snappedY + element.height / 2;
+                    const otherCenterY = otherBounds.y + otherBounds.height / 2;
+                    const centerYDistance = Math.abs(elementCenterY - otherCenterY);
+                    if (centerYDistance < minYDistance) {
+                        snappedY = otherCenterY - element.height / 2;
+                        minYDistance = centerYDistance;
+                    }
+                });
+            }
 
             return { x: snappedX, y: snappedY };
         } catch (error) {
