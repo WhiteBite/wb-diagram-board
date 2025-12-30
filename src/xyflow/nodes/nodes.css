@@ -1,0 +1,40 @@
+/**
+ * Node styles with CSS variables for theme support
+ */
+
+/* Base node styles */
+.diagram-node {
+    background-color: var(--element-fill, #ffffff);
+    border-color: var(--element-stroke, #1e293b);
+    color: var(--theme-text, #1e1e1e);
+}
+
+/* Node label text */
+.diagram-node-label {
+    color: var(--theme-text, #1e1e1e);
+}
+
+/* SVG shapes */
+.diagram-node svg polygon,
+.diagram-node svg rect,
+.diagram-node svg circle,
+.diagram-node svg ellipse,
+.diagram-node svg path {
+    fill: var(--element-fill, #ffffff);
+    stroke: var(--element-stroke, #1e293b);
+}
+
+/* Selection highlight */
+.diagram-node.selected {
+    box-shadow: 0 0 0 2px var(--theme-primary, #3b82f6);
+}
+
+/* Handle styles */
+.react-flow__handle {
+    background-color: var(--element-handle, #6366f1);
+    border-color: var(--element-handle, #6366f1);
+}
+
+.react-flow__handle:hover {
+    background-color: var(--element-handle-hover, #4f46e5);
+}

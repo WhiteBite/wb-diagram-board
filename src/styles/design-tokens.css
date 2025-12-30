@@ -1,0 +1,505 @@
+/**
+ * WB Design System - Design Tokens
+ * 
+ * Centralized design tokens for consistent styling across the application.
+ * Modern, Miro-inspired color palette with comprehensive scales.
+ */
+
+:root {
+    /* =============================================================================
+     COLOR PALETTE - Primary (Blue)
+     ============================================================================= */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    --color-primary-950: #172554;
+
+    /* =============================================================================
+     COLOR PALETTE - Secondary (Purple)
+     ============================================================================= */
+    --color-secondary-50: #faf5ff;
+    --color-secondary-100: #f3e8ff;
+    --color-secondary-200: #e9d5ff;
+    --color-secondary-300: #d8b4fe;
+    --color-secondary-400: #c084fc;
+    --color-secondary-500: #a855f7;
+    --color-secondary-600: #9333ea;
+    --color-secondary-700: #7c3aed;
+    --color-secondary-800: #6b21a8;
+    --color-secondary-900: #581c87;
+    --color-secondary-950: #3b0764;
+
+    /* =============================================================================
+     COLOR PALETTE - Success (Green)
+     ============================================================================= */
+    --color-success-50: #ecfdf5;
+    --color-success-100: #d1fae5;
+    --color-success-200: #a7f3d0;
+    --color-success-300: #6ee7b7;
+    --color-success-400: #34d399;
+    --color-success-500: #10b981;
+    --color-success-600: #059669;
+    --color-success-700: #047857;
+    --color-success-800: #065f46;
+    --color-success-900: #064e3b;
+    --color-success-950: #022c22;
+
+    /* =============================================================================
+     COLOR PALETTE - Warning (Amber)
+     ============================================================================= */
+    --color-warning-50: #fffbeb;
+    --color-warning-100: #fef3c7;
+    --color-warning-200: #fde68a;
+    --color-warning-300: #fcd34d;
+    --color-warning-400: #fbbf24;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+    --color-warning-800: #92400e;
+    --color-warning-900: #78350f;
+    --color-warning-950: #451a03;
+
+    /* =============================================================================
+     COLOR PALETTE - Error (Red)
+     ============================================================================= */
+    --color-error-50: #fef2f2;
+    --color-error-100: #fee2e2;
+    --color-error-200: #fecaca;
+    --color-error-300: #fca5a5;
+    --color-error-400: #f87171;
+    --color-error-500: #ef4444;
+    --color-error-600: #dc2626;
+    --color-error-700: #b91c1c;
+    --color-error-800: #991b1b;
+    --color-error-900: #7f1d1d;
+    --color-error-950: #450a0a;
+
+    /* =============================================================================
+     COLOR PALETTE - Neutral (Slate)
+     ============================================================================= */
+    --color-neutral-50: #f8fafc;
+    --color-neutral-100: #f1f5f9;
+    --color-neutral-200: #e2e8f0;
+    --color-neutral-300: #cbd5e1;
+    --color-neutral-400: #94a3b8;
+    --color-neutral-500: #64748b;
+    --color-neutral-600: #475569;
+    --color-neutral-700: #334155;
+    --color-neutral-800: #1e293b;
+    --color-neutral-900: #0f172a;
+    --color-neutral-950: #020617;
+
+    /* =============================================================================
+     COLOR PALETTE - Accent Colors (for diagrams/elements)
+     ============================================================================= */
+    --color-accent-cyan: #06b6d4;
+    --color-accent-teal: #14b8a6;
+    --color-accent-indigo: #6366f1;
+    --color-accent-violet: #8b5cf6;
+    --color-accent-pink: #ec4899;
+    --color-accent-rose: #f43f5e;
+    --color-accent-orange: #f97316;
+    --color-accent-lime: #84cc16;
+
+    /* =============================================================================
+     SPACING SCALE (4px base)
+     ============================================================================= */
+    --space-0: 0;
+    --space-px: 1px;
+    --space-0-5: 0.125rem;
+    /* 2px */
+    --space-1: 0.25rem;
+    /* 4px */
+    --space-1-5: 0.375rem;
+    /* 6px */
+    --space-2: 0.5rem;
+    /* 8px */
+    --space-2-5: 0.625rem;
+    /* 10px */
+    --space-3: 0.75rem;
+    /* 12px */
+    --space-3-5: 0.875rem;
+    /* 14px */
+    --space-4: 1rem;
+    /* 16px */
+    --space-5: 1.25rem;
+    /* 20px */
+    --space-6: 1.5rem;
+    /* 24px */
+    --space-7: 1.75rem;
+    /* 28px */
+    --space-8: 2rem;
+    /* 32px */
+    --space-9: 2.25rem;
+    /* 36px */
+    --space-10: 2.5rem;
+    /* 40px */
+    --space-11: 2.75rem;
+    /* 44px */
+    --space-12: 3rem;
+    /* 48px */
+    --space-14: 3.5rem;
+    /* 56px */
+    --space-16: 4rem;
+    /* 64px */
+    --space-20: 5rem;
+    /* 80px */
+    --space-24: 6rem;
+    /* 96px */
+    --space-28: 7rem;
+    /* 112px */
+    --space-32: 8rem;
+    /* 128px */
+
+    /* =============================================================================
+     BORDER RADIUS SCALE
+     ============================================================================= */
+    --radius-none: 0;
+    --radius-sm: 0.125rem;
+    /* 2px */
+    --radius-default: 0.25rem;
+    /* 4px */
+    --radius-md: 0.375rem;
+    /* 6px */
+    --radius-lg: 0.5rem;
+    /* 8px */
+    --radius-xl: 0.75rem;
+    /* 12px */
+    --radius-2xl: 1rem;
+    /* 16px */
+    --radius-3xl: 1.5rem;
+    /* 24px */
+    --radius-full: 9999px;
+
+    /* =============================================================================
+     SHADOW SCALE
+     ============================================================================= */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+    --shadow-none: 0 0 #0000;
+
+    /* Colored shadows */
+    --shadow-primary: 0 4px 14px 0 rgb(37 99 235 / 0.25);
+    --shadow-secondary: 0 4px 14px 0 rgb(124 58 237 / 0.25);
+    --shadow-success: 0 4px 14px 0 rgb(5 150 105 / 0.25);
+    --shadow-warning: 0 4px 14px 0 rgb(217 119 6 / 0.25);
+    --shadow-error: 0 4px 14px 0 rgb(220 38 38 / 0.25);
+
+    /* =============================================================================
+     TYPOGRAPHY SCALE
+     ============================================================================= */
+    /* Font families */
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+    --font-hand: 'Caveat', 'Virgil', cursive;
+
+    /* Font sizes */
+    --text-xs: 0.75rem;
+    /* 12px */
+    --text-sm: 0.875rem;
+    /* 14px */
+    --text-base: 1rem;
+    /* 16px */
+    --text-lg: 1.125rem;
+    /* 18px */
+    --text-xl: 1.25rem;
+    /* 20px */
+    --text-2xl: 1.5rem;
+    /* 24px */
+    --text-3xl: 1.875rem;
+    /* 30px */
+    --text-4xl: 2.25rem;
+    /* 36px */
+    --text-5xl: 3rem;
+    /* 48px */
+
+    /* Line heights */
+    --leading-none: 1;
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose: 2;
+
+    /* Font weights */
+    --font-thin: 100;
+    --font-extralight: 200;
+    --font-light: 300;
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
+    --font-black: 900;
+
+    /* Letter spacing */
+    --tracking-tighter: -0.05em;
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0em;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+    --tracking-widest: 0.1em;
+
+    /* =============================================================================
+     ANIMATION DURATIONS
+     ============================================================================= */
+    --duration-instant: 0ms;
+    --duration-fastest: 50ms;
+    --duration-faster: 100ms;
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 400ms;
+    --duration-slowest: 500ms;
+    --duration-lazy: 700ms;
+    --duration-glacial: 1000ms;
+
+    /* Easing functions */
+    --ease-linear: linear;
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* =============================================================================
+     Z-INDEX SCALE
+     ============================================================================= */
+    --z-behind: -1;
+    --z-base: 0;
+    --z-raised: 10;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-overlay: 300;
+    --z-modal: 400;
+    --z-popover: 500;
+    --z-tooltip: 600;
+    --z-toast: 700;
+    --z-max: 9999;
+
+    /* =============================================================================
+     BORDER WIDTHS
+     ============================================================================= */
+    --border-0: 0;
+    --border-1: 1px;
+    --border-2: 2px;
+    --border-3: 3px;
+    --border-4: 4px;
+    --border-8: 8px;
+
+    /* =============================================================================
+     OPACITY SCALE
+     ============================================================================= */
+    --opacity-0: 0;
+    --opacity-5: 0.05;
+    --opacity-10: 0.1;
+    --opacity-20: 0.2;
+    --opacity-25: 0.25;
+    --opacity-30: 0.3;
+    --opacity-40: 0.4;
+    --opacity-50: 0.5;
+    --opacity-60: 0.6;
+    --opacity-70: 0.7;
+    --opacity-75: 0.75;
+    --opacity-80: 0.8;
+    --opacity-90: 0.9;
+    --opacity-95: 0.95;
+    --opacity-100: 1;
+
+    /* =============================================================================
+     GRADIENTS
+     ============================================================================= */
+    --gradient-primary: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--color-secondary-500) 0%, var(--color-secondary-600) 100%);
+    --gradient-success: linear-gradient(135deg, var(--color-success-500) 0%, var(--color-success-600) 100%);
+    --gradient-warning: linear-gradient(135deg, var(--color-warning-500) 0%, var(--color-warning-600) 100%);
+    --gradient-error: linear-gradient(135deg, var(--color-error-500) 0%, var(--color-error-600) 100%);
+
+    /* Vibrant gradients */
+    --gradient-vibrant-blue: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-vibrant-purple: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+    --gradient-vibrant-sunset: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+    --gradient-vibrant-ocean: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    --gradient-vibrant-forest: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    --gradient-vibrant-fire: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+
+    /* Subtle gradients */
+    --gradient-subtle-light: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    --gradient-subtle-dark: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+
+    /* =============================================================================
+     SEMANTIC TOKENS - Light Theme
+     ============================================================================= */
+    /* Backgrounds */
+    --bg-base: var(--color-neutral-50);
+    --bg-surface: #ffffff;
+    --bg-elevated: #ffffff;
+    --bg-muted: var(--color-neutral-100);
+    --bg-subtle: var(--color-neutral-200);
+    --bg-canvas: #f5f5f5;
+
+    /* Text */
+    --text-primary: var(--color-neutral-900);
+    --text-secondary: var(--color-neutral-600);
+    --text-muted: var(--color-neutral-500);
+    --text-disabled: var(--color-neutral-400);
+    --text-inverse: #ffffff;
+
+    /* Borders */
+    --border-default: var(--color-neutral-200);
+    --border-muted: var(--color-neutral-100);
+    --border-strong: var(--color-neutral-300);
+    --border-focus: var(--color-primary-500);
+
+    /* Interactive */
+    --interactive-default: var(--color-primary-500);
+    --interactive-hover: var(--color-primary-600);
+    --interactive-active: var(--color-primary-700);
+    --interactive-muted: var(--color-primary-100);
+
+    /* Canvas specific */
+    --canvas-bg: #f5f5f5;
+    --canvas-grid: var(--color-neutral-300);
+    --canvas-selection: var(--color-primary-500);
+
+    /* Toolbar */
+    --toolbar-bg: #ffffff;
+    --toolbar-hover: var(--color-neutral-100);
+    --toolbar-active: var(--color-primary-100);
+
+    /* Elements */
+    --element-stroke: var(--color-neutral-800);
+    --element-fill: #ffffff;
+
+    /* UI */
+    --ui-border: var(--color-neutral-200);
+    --ui-shadow: rgba(0, 0, 0, 0.08);
+    --ui-text: var(--color-neutral-700);
+    --ui-text-muted: var(--color-neutral-500);
+}
+
+/* =============================================================================
+   DARK THEME OVERRIDES
+   ============================================================================= */
+.dark,
+:root.dark {
+    /* Semantic tokens - Dark Theme */
+    --bg-base: var(--color-neutral-950);
+    --bg-surface: var(--color-neutral-900);
+    --bg-elevated: var(--color-neutral-800);
+    --bg-muted: var(--color-neutral-800);
+    --bg-subtle: var(--color-neutral-700);
+    --bg-canvas: #0f172a;
+
+    /* Text */
+    --text-primary: var(--color-neutral-50);
+    --text-secondary: var(--color-neutral-300);
+    --text-muted: var(--color-neutral-400);
+    --text-disabled: var(--color-neutral-600);
+    --text-inverse: var(--color-neutral-900);
+
+    /* Borders */
+    --border-default: var(--color-neutral-700);
+    --border-muted: var(--color-neutral-800);
+    --border-strong: var(--color-neutral-600);
+    --border-focus: var(--color-primary-400);
+
+    /* Interactive */
+    --interactive-default: var(--color-primary-400);
+    --interactive-hover: var(--color-primary-300);
+    --interactive-active: var(--color-primary-500);
+    --interactive-muted: var(--color-primary-900);
+
+    /* Canvas specific */
+    --canvas-bg: #0f172a;
+    --canvas-grid: var(--color-neutral-700);
+    --canvas-selection: var(--color-primary-400);
+
+    /* Toolbar */
+    --toolbar-bg: var(--color-neutral-900);
+    --toolbar-hover: var(--color-neutral-800);
+    --toolbar-active: var(--color-primary-900);
+
+    /* Elements */
+    --element-stroke: var(--color-neutral-200);
+    --element-fill: var(--color-neutral-800);
+
+    /* UI */
+    --ui-border: var(--color-neutral-700);
+    --ui-shadow: rgba(0, 0, 0, 0.4);
+    --ui-text: var(--color-neutral-200);
+    --ui-text-muted: var(--color-neutral-400);
+
+    /* Dark mode shadows */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+}
+
+/* =============================================================================
+   HIGH CONTRAST THEME
+   ============================================================================= */
+:root.high-contrast {
+    /* Backgrounds */
+    --bg-base: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-elevated: #ffffff;
+    --bg-muted: #f0f0f0;
+    --bg-subtle: #e0e0e0;
+    --bg-canvas: #ffffff;
+
+    /* Text */
+    --text-primary: #000000;
+    --text-secondary: #1a1a1a;
+    --text-muted: #333333;
+    --text-disabled: #666666;
+    --text-inverse: #ffffff;
+
+    /* Borders */
+    --border-default: #000000;
+    --border-muted: #333333;
+    --border-strong: #000000;
+    --border-focus: #0000ff;
+
+    /* Interactive */
+    --interactive-default: #0000ff;
+    --interactive-hover: #0000cc;
+    --interactive-active: #000099;
+    --interactive-muted: #e6e6ff;
+
+    /* Canvas */
+    --canvas-bg: #ffffff;
+    --canvas-grid: #cccccc;
+    --canvas-selection: #0000ff;
+
+    /* Toolbar */
+    --toolbar-bg: #ffffff;
+    --toolbar-hover: #e0e0e0;
+    --toolbar-active: #0000ff;
+
+    /* Elements */
+    --element-stroke: #000000;
+    --element-fill: #ffffff;
+
+    /* UI */
+    --ui-border: #000000;
+    --ui-shadow: rgba(0, 0, 0, 0.3);
+    --ui-text: #000000;
+    --ui-text-muted: #333333;
+}

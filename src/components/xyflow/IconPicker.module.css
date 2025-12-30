@@ -1,0 +1,136 @@
+/**
+ * IconPicker Styles
+ */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--color-surface, #ffffff);
+    border-radius: 0.5rem;
+    max-height: 20rem;
+    overflow: hidden;
+}
+
+.container.dark {
+    background: var(--color-surface-dark, #1e293b);
+}
+
+.header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background: var(--color-background, #f8fafc);
+    color: var(--color-text, #1e293b);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.searchInput:focus {
+    border-color: var(--color-primary, #3b82f6);
+}
+
+.dark .searchInput {
+    background: var(--color-background-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #f1f5f9);
+}
+
+.clearButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.375rem;
+    background: var(--color-danger, #ef4444);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.clearButton:hover {
+    background: var(--color-danger-hover, #dc2626);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.25rem;
+    overflow-y: auto;
+    padding: 0.25rem;
+    max-height: 15rem;
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--color-text-secondary, #64748b);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.iconButton:hover {
+    background: var(--color-hover, #f1f5f9);
+    color: var(--color-text, #1e293b);
+}
+
+.iconButton.selected {
+    background: var(--color-primary, #3b82f6);
+    color: white;
+    border-color: var(--color-primary, #3b82f6);
+}
+
+.iconButton.dark {
+    color: var(--color-text-secondary-dark, #94a3b8);
+}
+
+.iconButton.dark:hover {
+    background: var(--color-hover-dark, #334155);
+    color: var(--color-text-dark, #f1f5f9);
+}
+
+.iconButton.dark.selected {
+    background: var(--color-primary, #3b82f6);
+    color: white;
+}
+
+.moreHint {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #64748b);
+    text-align: center;
+    padding: 0.5rem;
+}
+
+.dark .moreHint {
+    color: var(--color-text-secondary-dark, #94a3b8);
+}
+
+.noResults {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #64748b);
+    text-align: center;
+    padding: 1rem;
+}
+
+.dark .noResults {
+    color: var(--color-text-secondary-dark, #94a3b8);
+}

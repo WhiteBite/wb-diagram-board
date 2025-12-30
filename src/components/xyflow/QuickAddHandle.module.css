@@ -1,0 +1,153 @@
+.container {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    /* Above node content */
+}
+
+/* Hide the default React Flow handle dot */
+.handle {
+    width: 20px !important;
+    height: 20px !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: crosshair !important;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    pointer-events: all !important;
+    position: relative !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+}
+
+/* Invisible hitbox for easier interaction - 24x24px */
+.handle::before {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: transparent;
+    z-index: -1;
+}
+
+.button {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 1.5px solid #3b82f6;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    /* Let clicks pass through to the Handle */
+    transition:
+        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.2s ease;
+    opacity: 0;
+    transform: scale(0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0;
+}
+
+/* Show handles when hovering on node - subtle appearance */
+:global(.react-flow__node:hover) .button {
+    opacity: 0.7;
+    transform: scale(1);
+}
+
+/* Enhanced hover effect on handle itself */
+.handle:hover .button {
+    opacity: 1;
+    background: #3b82f6;
+    color: white;
+    transform: scale(1.3);
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.2),
+        0 0 12px rgba(59, 130, 246, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Active/pressed state */
+.handle:active .button {
+    transform: scale(1.15);
+    box-shadow:
+        0 0 0 4px rgba(59, 130, 246, 0.3),
+        0 0 16px rgba(59, 130, 246, 0.6),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Connecting state - when dragging a connection */
+.handle:global(.connecting) .button,
+.handle:global(.connectingto) .button {
+    opacity: 1;
+    background: #3b82f6;
+    color: white;
+    transform: scale(1.3);
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.25),
+        0 0 12px rgba(59, 130, 246, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Pulse animation for connecting state */
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 3px rgba(59, 130, 246, 0.25),
+            0 0 12px rgba(59, 130, 246, 0.5),
+            0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 5px rgba(59, 130, 246, 0.15),
+            0 0 20px rgba(59, 130, 246, 0.4),
+            0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Position adjustments for container based on Position prop */
+.top {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.right {
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+}
+
+.bottom {
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.left {
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+}

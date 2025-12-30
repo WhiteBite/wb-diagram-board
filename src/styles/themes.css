@@ -1,0 +1,734 @@
+/**
+ * WB Theme System - Theme CSS Variables
+ * 
+ * Comprehensive CSS custom properties for theme colors and styling.
+ * Supports Light, Dark, and High Contrast themes.
+ */
+
+:root {
+    /* ==========================================================================
+       PRIMARY COLORS
+       ========================================================================== */
+    --theme-primary: #6366f1;
+    --theme-primary-hover: #4f46e5;
+    --theme-primary-active: #4338ca;
+    --theme-primary-light: #e0e7ff;
+    --theme-primary-dark: #3730a3;
+
+    --theme-secondary: #8b5cf6;
+    --theme-secondary-hover: #7c3aed;
+    --theme-secondary-active: #6d28d9;
+    --theme-secondary-light: #ede9fe;
+    --theme-secondary-dark: #5b21b6;
+
+    /* ==========================================================================
+       BACKGROUNDS
+       ========================================================================== */
+    --theme-background: #ffffff;
+    --theme-surface: #f9fafb;
+    --theme-surface-elevated: #ffffff;
+    --theme-surface-overlay: rgba(255, 255, 255, 0.95);
+    --theme-backdrop: rgba(0, 0, 0, 0.5);
+
+    /* ==========================================================================
+       TEXT
+       ========================================================================== */
+    --theme-text: #1f2937;
+    --theme-text-secondary: #4b5563;
+    --theme-text-muted: #6b7280;
+    --theme-text-disabled: #9ca3af;
+    --theme-text-inverse: #ffffff;
+    --theme-text-link: #6366f1;
+    --theme-text-link-hover: #4f46e5;
+
+    /* ==========================================================================
+       BORDERS
+       ========================================================================== */
+    --theme-border: #e5e7eb;
+    --theme-border-light: #f3f4f6;
+    --theme-border-strong: #d1d5db;
+    --theme-border-focus: #6366f1;
+    --theme-border-error: #ef4444;
+
+    /* ==========================================================================
+       STATES
+       ========================================================================== */
+    --theme-success: #10b981;
+    --theme-success-light: #d1fae5;
+    --theme-success-dark: #059669;
+
+    --theme-warning: #f59e0b;
+    --theme-warning-light: #fef3c7;
+    --theme-warning-dark: #d97706;
+
+    --theme-error: #ef4444;
+    --theme-error-light: #fee2e2;
+    --theme-error-dark: #dc2626;
+
+    --theme-info: #3b82f6;
+    --theme-info-light: #dbeafe;
+    --theme-info-dark: #2563eb;
+
+    /* ==========================================================================
+       CANVAS
+       ========================================================================== */
+    --canvas-bg: #f5f5f5;
+    --canvas-grid: #e0e0e0;
+    --canvas-grid-major: #d1d5db;
+    --canvas-selection: #6366f1;
+    --canvas-selection-fill: rgba(99, 102, 241, 0.1);
+    --canvas-guides: #6366f1;
+    --canvas-guides-snap: #10b981;
+
+    /* ==========================================================================
+       TOOLBAR
+       ========================================================================== */
+    --toolbar-bg: #ffffff;
+    --toolbar-bg-glass: rgba(255, 255, 255, 0.9);
+    --toolbar-hover: #f3f4f6;
+    --toolbar-active: #e0e7ff;
+    --toolbar-active-text: #4f46e5;
+    --toolbar-separator: #e5e7eb;
+    --toolbar-shadow: 0 0.625rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.1),
+        0 0.5rem 0.625rem -0.375rem rgba(0, 0, 0, 0.1);
+
+    /* ==========================================================================
+       PANELS
+       ========================================================================== */
+    --panel-bg: #ffffff;
+    --panel-bg-glass: rgba(255, 255, 255, 0.95);
+    --panel-header-bg: #f9fafb;
+    --panel-border: #e5e7eb;
+    --panel-shadow: 0 1.25rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.1),
+        0 0.5rem 0.625rem -0.375rem rgba(0, 0, 0, 0.1);
+
+    /* ==========================================================================
+       ELEMENTS (Diagram nodes/edges)
+       ========================================================================== */
+    --element-stroke: #1e1e1e;
+    --element-stroke-selected: #6366f1;
+    --element-fill: #ffffff;
+    --element-fill-hover: #f9fafb;
+    --element-handle: #6366f1;
+    --element-handle-hover: #4f46e5;
+
+    /* ==========================================================================
+       UI SHADOWS
+       ========================================================================== */
+    --ui-shadow: rgba(0, 0, 0, 0.08);
+    --ui-shadow-sm: 0 0.0625rem 0.125rem 0 rgba(0, 0, 0, 0.05);
+    --ui-shadow-md: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1),
+        0 0.125rem 0.25rem -0.125rem rgba(0, 0, 0, 0.1);
+    --ui-shadow-lg: 0 0.625rem 0.9375rem -0.1875rem rgba(0, 0, 0, 0.1),
+        0 0.25rem 0.375rem -0.25rem rgba(0, 0, 0, 0.1);
+    --ui-shadow-xl: 0 1.25rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.1),
+        0 0.5rem 0.625rem -0.375rem rgba(0, 0, 0, 0.1);
+    --ui-shadow-glow: 0 0 1rem rgba(99, 102, 241, 0.3);
+
+    /* ==========================================================================
+       INTERACTIVE STATES
+       ========================================================================== */
+    --interactive-hover-opacity: 0.08;
+    --interactive-active-opacity: 0.12;
+    --interactive-disabled-opacity: 0.4;
+
+    /* ==========================================================================
+       FOCUS RING
+       ========================================================================== */
+    --focus-ring-color: #6366f1;
+    --focus-ring-width: 2px;
+    --focus-ring-offset: 2px;
+    --focus-ring: 0 0 0 var(--focus-ring-offset) var(--theme-background),
+        0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+
+    /* ==========================================================================
+       SCROLLBAR
+       ========================================================================== */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+    --scrollbar-width: 0.5rem;
+
+    /* ==========================================================================
+       MOBILE TOUCH TARGETS
+       ========================================================================== */
+    --touch-target-min: 2.75rem;
+    /* 44px - minimum touch target */
+    --touch-target-comfortable: 3rem;
+    /* 48px - comfortable touch target */
+}
+
+/**
+ * Dark theme
+ */
+:root.dark {
+    /* ==========================================================================
+       PRIMARY COLORS
+       ========================================================================== */
+    --theme-primary: #818cf8;
+    --theme-primary-hover: #a5b4fc;
+    --theme-primary-active: #6366f1;
+    --theme-primary-light: #312e81;
+    --theme-primary-dark: #c7d2fe;
+
+    --theme-secondary: #a78bfa;
+    --theme-secondary-hover: #c4b5fd;
+    --theme-secondary-active: #8b5cf6;
+    --theme-secondary-light: #4c1d95;
+    --theme-secondary-dark: #ddd6fe;
+
+    /* ==========================================================================
+       BACKGROUNDS
+       ========================================================================== */
+    --theme-background: #0f172a;
+    --theme-surface: #1e293b;
+    --theme-surface-elevated: #334155;
+    --theme-surface-overlay: rgba(30, 41, 59, 0.95);
+    --theme-backdrop: rgba(0, 0, 0, 0.7);
+
+    /* ==========================================================================
+       TEXT
+       ========================================================================== */
+    --theme-text: #e2e8f0;
+    --theme-text-secondary: #cbd5e1;
+    --theme-text-muted: #94a3b8;
+    --theme-text-disabled: #64748b;
+    --theme-text-inverse: #0f172a;
+    --theme-text-link: #818cf8;
+    --theme-text-link-hover: #a5b4fc;
+
+    /* ==========================================================================
+       BORDERS
+       ========================================================================== */
+    --theme-border: #334155;
+    --theme-border-light: #1e293b;
+    --theme-border-strong: #475569;
+    --theme-border-focus: #818cf8;
+    --theme-border-error: #f87171;
+
+    /* ==========================================================================
+       STATES
+       ========================================================================== */
+    --theme-success: #34d399;
+    --theme-success-light: #064e3b;
+    --theme-success-dark: #6ee7b7;
+
+    --theme-warning: #fbbf24;
+    --theme-warning-light: #78350f;
+    --theme-warning-dark: #fcd34d;
+
+    --theme-error: #f87171;
+    --theme-error-light: #7f1d1d;
+    --theme-error-dark: #fca5a5;
+
+    --theme-info: #60a5fa;
+    --theme-info-light: #1e3a8a;
+    --theme-info-dark: #93c5fd;
+
+    /* ==========================================================================
+       CANVAS
+       ========================================================================== */
+    --canvas-bg: #1a1a2e;
+    --canvas-grid: #2d2d44;
+    --canvas-grid-major: #3d3d5c;
+    --canvas-selection: #818cf8;
+    --canvas-selection-fill: rgba(129, 140, 248, 0.15);
+    --canvas-guides: #818cf8;
+    --canvas-guides-snap: #34d399;
+
+    /* ==========================================================================
+       TOOLBAR
+       ========================================================================== */
+    --toolbar-bg: #16213e;
+    --toolbar-bg-glass: rgba(22, 33, 62, 0.9);
+    --toolbar-hover: #1f3460;
+    --toolbar-active: #3730a3;
+    --toolbar-active-text: #a5b4fc;
+    --toolbar-separator: #334155;
+    --toolbar-shadow: 0 0.625rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.3),
+        0 0.5rem 0.625rem -0.375rem rgba(0, 0, 0, 0.2);
+
+    /* ==========================================================================
+       PANELS
+       ========================================================================== */
+    --panel-bg: #1e293b;
+    --panel-bg-glass: rgba(30, 41, 59, 0.95);
+    --panel-header-bg: #0f172a;
+    --panel-border: #334155;
+    --panel-shadow: 0 1.25rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.3),
+        0 0.5rem 0.625rem -0.375rem rgba(0, 0, 0, 0.2);
+
+    /* ==========================================================================
+       ELEMENTS (Diagram nodes/edges)
+       ========================================================================== */
+    --element-stroke: #e5e7eb;
+    --element-stroke-selected: #818cf8;
+    --element-fill: #2d2d44;
+    --element-fill-hover: #3d3d5c;
+    --element-handle: #818cf8;
+    --element-handle-hover: #a5b4fc;
+
+    /* ==========================================================================
+       UI SHADOWS
+       ========================================================================== */
+    --ui-shadow: rgba(0, 0, 0, 0.3);
+    --ui-shadow-sm: 0 0.0625rem 0.125rem 0 rgba(0, 0, 0, 0.2);
+    --ui-shadow-md: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.3),
+        0 0.125rem 0.25rem -0.125rem rgba(0, 0, 0, 0.2);
+    --ui-shadow-lg: 0 0.625rem 0.9375rem -0.1875rem rgba(0, 0, 0, 0.3),
+        0 0.25rem 0.375rem -0.25rem rgba(0, 0, 0, 0.2);
+    --ui-shadow-xl: 0 1.25rem 1.5625rem -0.3125rem rgba(0, 0, 0, 0.3),
+        0 0.5rem 0.625rem -0.375rem rgba(0, 0, 0, 0.2);
+    --ui-shadow-glow: 0 0 1rem rgba(129, 140, 248, 0.4);
+
+    /* ==========================================================================
+       FOCUS RING
+       ========================================================================== */
+    --focus-ring-color: #818cf8;
+    --focus-ring: 0 0 0 var(--focus-ring-offset) var(--theme-background),
+        0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+
+    /* ==========================================================================
+       SCROLLBAR
+       ========================================================================== */
+    --scrollbar-thumb: #475569;
+    --scrollbar-thumb-hover: #64748b;
+}
+
+/**
+ * High contrast theme
+ */
+:root.high-contrast {
+    /* ==========================================================================
+       PRIMARY COLORS
+       ========================================================================== */
+    --theme-primary: #0000ff;
+    --theme-primary-hover: #0000cc;
+    --theme-primary-active: #000099;
+    --theme-primary-light: #e6e6ff;
+    --theme-primary-dark: #000066;
+
+    --theme-secondary: #ff00ff;
+    --theme-secondary-hover: #cc00cc;
+    --theme-secondary-active: #990099;
+    --theme-secondary-light: #ffe6ff;
+    --theme-secondary-dark: #660066;
+
+    /* ==========================================================================
+       BACKGROUNDS
+       ========================================================================== */
+    --theme-background: #ffffff;
+    --theme-surface: #f0f0f0;
+    --theme-surface-elevated: #ffffff;
+    --theme-surface-overlay: rgba(255, 255, 255, 0.98);
+    --theme-backdrop: rgba(0, 0, 0, 0.8);
+
+    /* ==========================================================================
+       TEXT
+       ========================================================================== */
+    --theme-text: #000000;
+    --theme-text-secondary: #1a1a1a;
+    --theme-text-muted: #333333;
+    --theme-text-disabled: #666666;
+    --theme-text-inverse: #ffffff;
+    --theme-text-link: #0000ff;
+    --theme-text-link-hover: #0000cc;
+
+    /* ==========================================================================
+       BORDERS
+       ========================================================================== */
+    --theme-border: #000000;
+    --theme-border-light: #333333;
+    --theme-border-strong: #000000;
+    --theme-border-focus: #0000ff;
+    --theme-border-error: #ff0000;
+
+    /* ==========================================================================
+       STATES
+       ========================================================================== */
+    --theme-success: #008000;
+    --theme-success-light: #e6ffe6;
+    --theme-success-dark: #006600;
+
+    --theme-warning: #ff8800;
+    --theme-warning-light: #fff3e6;
+    --theme-warning-dark: #cc6600;
+
+    --theme-error: #ff0000;
+    --theme-error-light: #ffe6e6;
+    --theme-error-dark: #cc0000;
+
+    --theme-info: #0000ff;
+    --theme-info-light: #e6e6ff;
+    --theme-info-dark: #0000cc;
+
+    /* ==========================================================================
+       CANVAS
+       ========================================================================== */
+    --canvas-bg: #ffffff;
+    --canvas-grid: #cccccc;
+    --canvas-grid-major: #999999;
+    --canvas-selection: #0000ff;
+    --canvas-selection-fill: rgba(0, 0, 255, 0.2);
+    --canvas-guides: #0000ff;
+    --canvas-guides-snap: #008000;
+
+    /* ==========================================================================
+       TOOLBAR
+       ========================================================================== */
+    --toolbar-bg: #ffffff;
+    --toolbar-bg-glass: rgba(255, 255, 255, 0.98);
+    --toolbar-hover: #e0e0e0;
+    --toolbar-active: #0000ff;
+    --toolbar-active-text: #ffffff;
+    --toolbar-separator: #000000;
+    --toolbar-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+
+    /* ==========================================================================
+       PANELS
+       ========================================================================== */
+    --panel-bg: #ffffff;
+    --panel-bg-glass: rgba(255, 255, 255, 0.98);
+    --panel-header-bg: #f0f0f0;
+    --panel-border: #000000;
+    --panel-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
+
+    /* ==========================================================================
+       ELEMENTS (Diagram nodes/edges)
+       ========================================================================== */
+    --element-stroke: #000000;
+    --element-stroke-selected: #0000ff;
+    --element-fill: #ffffff;
+    --element-fill-hover: #f0f0f0;
+    --element-handle: #0000ff;
+    --element-handle-hover: #0000cc;
+
+    /* ==========================================================================
+       UI SHADOWS
+       ========================================================================== */
+    --ui-shadow: rgba(0, 0, 0, 0.3);
+    --ui-shadow-glow: 0 0 0.5rem rgba(0, 0, 255, 0.5);
+
+    /* ==========================================================================
+       FOCUS RING
+       ========================================================================== */
+    --focus-ring-color: #0000ff;
+    --focus-ring-width: 3px;
+    --focus-ring-offset: 2px;
+
+    /* ==========================================================================
+       SCROLLBAR
+       ========================================================================== */
+    --scrollbar-thumb: #666666;
+    --scrollbar-thumb-hover: #333333;
+}
+
+/**
+ * Sepia theme (comfortable reading)
+ */
+:root.sepia {
+    /* ==========================================================================
+       PRIMARY COLORS
+       ========================================================================== */
+    --theme-primary: #8b6914;
+    --theme-primary-hover: #7a5c12;
+    --theme-primary-active: #695010;
+    --theme-primary-light: #f5e6c8;
+    --theme-primary-dark: #5a4510;
+
+    --theme-secondary: #a67c00;
+    --theme-secondary-hover: #8f6b00;
+    --theme-secondary-active: #785a00;
+    --theme-secondary-light: #fff0c4;
+    --theme-secondary-dark: #614900;
+
+    /* ==========================================================================
+       BACKGROUNDS
+       ========================================================================== */
+    --theme-background: #f4ecd8;
+    --theme-surface: #efe6d5;
+    --theme-surface-elevated: #faf6ed;
+    --theme-surface-overlay: rgba(244, 236, 216, 0.95);
+    --theme-backdrop: rgba(61, 61, 61, 0.5);
+
+    /* ==========================================================================
+       TEXT
+       ========================================================================== */
+    --theme-text: #3d3d3d;
+    --theme-text-secondary: #4a4a4a;
+    --theme-text-muted: #5c5c5c;
+    --theme-text-disabled: #8a8a8a;
+    --theme-text-inverse: #f4ecd8;
+    --theme-text-link: #8b6914;
+    --theme-text-link-hover: #7a5c12;
+
+    /* ==========================================================================
+       BORDERS
+       ========================================================================== */
+    --theme-border: #d4c4a8;
+    --theme-border-light: #e0d5c1;
+    --theme-border-strong: #c4b498;
+    --theme-border-focus: #8b6914;
+    --theme-border-error: #b54a4a;
+
+    /* ==========================================================================
+       STATES
+       ========================================================================== */
+    --theme-success: #5d8a3e;
+    --theme-success-light: #e8f5e0;
+    --theme-success-dark: #4a7030;
+
+    --theme-warning: #c9a227;
+    --theme-warning-light: #fff8e0;
+    --theme-warning-dark: #a6851f;
+
+    --theme-error: #b54a4a;
+    --theme-error-light: #fce8e8;
+    --theme-error-dark: #943c3c;
+
+    --theme-info: #5a7fa8;
+    --theme-info-light: #e8f0f8;
+    --theme-info-dark: #486a8c;
+
+    /* ==========================================================================
+       CANVAS
+       ========================================================================== */
+    --canvas-bg: #f9f3e3;
+    --canvas-grid: #e0d5c1;
+    --canvas-grid-major: #d4c4a8;
+    --canvas-selection: #8b6914;
+    --canvas-selection-fill: rgba(139, 105, 20, 0.15);
+    --canvas-guides: #8b6914;
+    --canvas-guides-snap: #5d8a3e;
+
+    /* ==========================================================================
+       TOOLBAR
+       ========================================================================== */
+    --toolbar-bg: #f4ecd8;
+    --toolbar-bg-glass: rgba(244, 236, 216, 0.9);
+    --toolbar-hover: #e8dfc8;
+    --toolbar-active: #d4c4a8;
+    --toolbar-active-text: #3d3d3d;
+    --toolbar-separator: #d4c4a8;
+    --toolbar-shadow: 0 0.625rem 1.5625rem -0.3125rem rgba(61, 61, 61, 0.1),
+        0 0.5rem 0.625rem -0.375rem rgba(61, 61, 61, 0.08);
+
+    /* ==========================================================================
+       PANELS
+       ========================================================================== */
+    --panel-bg: #f4ecd8;
+    --panel-bg-glass: rgba(244, 236, 216, 0.95);
+    --panel-header-bg: #efe6d5;
+    --panel-border: #d4c4a8;
+    --panel-shadow: 0 1.25rem 1.5625rem -0.3125rem rgba(61, 61, 61, 0.1),
+        0 0.5rem 0.625rem -0.375rem rgba(61, 61, 61, 0.08);
+
+    /* ==========================================================================
+       ELEMENTS (Diagram nodes/edges)
+       ========================================================================== */
+    --element-stroke: #3d3d3d;
+    --element-stroke-selected: #8b6914;
+    --element-fill: #faf6ed;
+    --element-fill-hover: #f4ecd8;
+    --element-handle: #8b6914;
+    --element-handle-hover: #7a5c12;
+
+    /* ==========================================================================
+       UI SHADOWS
+       ========================================================================== */
+    --ui-shadow: rgba(61, 61, 61, 0.1);
+    --ui-shadow-sm: 0 0.0625rem 0.125rem 0 rgba(61, 61, 61, 0.05);
+    --ui-shadow-md: 0 0.25rem 0.375rem -0.0625rem rgba(61, 61, 61, 0.1),
+        0 0.125rem 0.25rem -0.125rem rgba(61, 61, 61, 0.08);
+    --ui-shadow-lg: 0 0.625rem 0.9375rem -0.1875rem rgba(61, 61, 61, 0.1),
+        0 0.25rem 0.375rem -0.25rem rgba(61, 61, 61, 0.08);
+    --ui-shadow-xl: 0 1.25rem 1.5625rem -0.3125rem rgba(61, 61, 61, 0.1),
+        0 0.5rem 0.625rem -0.375rem rgba(61, 61, 61, 0.08);
+    --ui-shadow-glow: 0 0 1rem rgba(139, 105, 20, 0.3);
+
+    /* ==========================================================================
+       FOCUS RING
+       ========================================================================== */
+    --focus-ring-color: #8b6914;
+    --focus-ring: 0 0 0 var(--focus-ring-offset) var(--theme-background),
+        0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+
+    /* ==========================================================================
+       SCROLLBAR
+       ========================================================================== */
+    --scrollbar-thumb: #c4b498;
+    --scrollbar-thumb-hover: #a89878;
+}
+
+/**
+ * Transition utilities
+ */
+.transition-colors {
+    transition: color var(--duration-normal, 200ms) var(--ease-out, ease-out),
+        background-color var(--duration-normal, 200ms) var(--ease-out, ease-out),
+        border-color var(--duration-normal, 200ms) var(--ease-out, ease-out);
+}
+
+.transition-all {
+    transition: all var(--duration-normal, 200ms) var(--ease-out, ease-out);
+}
+
+.transition-fast {
+    transition: all var(--duration-fast, 150ms) var(--ease-out, ease-out);
+}
+
+.transition-slow {
+    transition: all var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out);
+}
+
+.transition-transform {
+    transition: transform var(--duration-normal, 200ms) var(--ease-out, ease-out);
+}
+
+.transition-opacity {
+    transition: opacity var(--duration-normal, 200ms) var(--ease-out, ease-out);
+}
+
+/**
+ * Reduce motion support
+ */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/**
+ * Color utilities
+ */
+.text-primary {
+    color: var(--theme-primary);
+}
+
+.text-secondary {
+    color: var(--theme-secondary);
+}
+
+.text-muted {
+    color: var(--theme-text-muted);
+}
+
+.bg-primary {
+    background-color: var(--theme-primary);
+}
+
+.bg-secondary {
+    background-color: var(--theme-secondary);
+}
+
+.bg-surface {
+    background-color: var(--theme-surface);
+}
+
+.border-primary {
+    border-color: var(--theme-primary);
+}
+
+.border-secondary {
+    border-color: var(--theme-secondary);
+}
+
+/**
+ * Shadow utilities
+ */
+.shadow-ui {
+    box-shadow: var(--ui-shadow-md);
+}
+
+.shadow-ui-lg {
+    box-shadow: var(--ui-shadow-lg);
+}
+
+.shadow-ui-xl {
+    box-shadow: var(--ui-shadow-xl);
+}
+
+.shadow-glow {
+    box-shadow: var(--ui-shadow-glow);
+}
+
+/**
+ * Theme transition class - smooth theme switching
+ */
+.theme-transition {
+    transition: background-color var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out),
+        color var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out),
+        border-color var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out),
+        box-shadow var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out),
+        fill var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out),
+        stroke var(--duration-slow, 300ms) var(--ease-in-out, ease-in-out);
+}
+
+/**
+ * Disable animations
+ */
+.no-animations {
+    animation: none !important;
+    transition: none !important;
+}
+
+/**
+ * Accessibility: Focus visible
+ */
+:focus-visible {
+    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--theme-primary));
+    outline-offset: var(--focus-ring-offset, 2px);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--theme-primary));
+    outline-offset: var(--focus-ring-offset, 2px);
+}
+
+/**
+ * Glass morphism effect
+ */
+.glass {
+    background: var(--theme-surface-overlay);
+    backdrop-filter: blur(0.75rem);
+    -webkit-backdrop-filter: blur(0.75rem);
+}
+
+.glass-strong {
+    background: var(--theme-surface-overlay);
+    backdrop-filter: blur(1.5rem);
+    -webkit-backdrop-filter: blur(1.5rem);
+}
+
+/**
+ * Interactive state utilities
+ */
+.interactive {
+    cursor: pointer;
+    transition: all var(--duration-fast, 150ms) var(--ease-out, ease-out);
+}
+
+.interactive:hover {
+    background-color: rgba(99, 102, 241, var(--interactive-hover-opacity, 0.08));
+}
+
+.interactive:active {
+    background-color: rgba(99, 102, 241, var(--interactive-active-opacity, 0.12));
+}
+
+.interactive:disabled,
+.interactive[disabled] {
+    opacity: var(--interactive-disabled-opacity, 0.4);
+    cursor: not-allowed;
+    pointer-events: none;
+}

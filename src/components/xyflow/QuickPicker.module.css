@@ -1,0 +1,86 @@
+.container {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    animation: pickerAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pickerAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.container.dark {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #475569;
+}
+
+.dark .item {
+    color: #94a3b8;
+}
+
+.item:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.dark .item:hover {
+    background: #334155;
+    color: #60a5fa;
+}
+
+.icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}

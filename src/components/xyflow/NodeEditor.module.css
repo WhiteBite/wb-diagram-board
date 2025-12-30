@@ -1,0 +1,158 @@
+/**
+ * NodeEditor styles
+ * Inline text editor for node labels with markdown formatting
+ */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    z-index: 1000;
+}
+
+.editorContainer {
+    position: fixed;
+    z-index: 1001;
+    min-width: 120px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur) saturate(180%);
+    -webkit-backdrop-filter: var(--glass-blur) saturate(180%);
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    animation: editorAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate(-50%, -50%);
+}
+
+@keyframes editorAppear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.formattingToolbar {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.25rem;
+    padding: 6px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    white-space: nowrap;
+}
+
+.formatButton {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+}
+
+.formatButton:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.modeToggle {
+    display: none;
+    /* Hide mode toggle for a cleaner Miro-like experience */
+}
+
+.editor,
+.editorTextarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.4;
+    color: #1e293b;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editorTextarea {
+    min-height: 40px;
+    text-align: left;
+}
+
+.hints {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    padding: 4px 12px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    font-size: 11px;
+    color: #ffffff;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.editorContainer:hover .hints {
+    opacity: 1;
+}
+
+/* Dark theme support - inherits from CSS variables in xyflow.css */
+:global(.dark) .editorContainer {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur) saturate(180%);
+    -webkit-backdrop-filter: var(--glass-blur) saturate(180%);
+    border-color: #60a5fa;
+}
+
+:global(.dark) .formattingToolbar {
+    background: var(--glass-bg);
+    border-color: var(--glass-border);
+}
+
+:global(.dark) .formatButton {
+    color: #94a3b8;
+}
+
+:global(.dark) .formatButton:hover {
+    background-color: #334155;
+    color: #f1f5f9;
+}
+
+:global(.dark) .editor,
+:global(.dark) .editorTextarea {
+    color: #f1f5f9;
+}

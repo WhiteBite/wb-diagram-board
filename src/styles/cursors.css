@@ -1,0 +1,210 @@
+/**
+ * WB Canvas - Cursor Styles
+ * 
+ * Tool-specific cursor styles for the canvas
+ * Each tool has an appropriate cursor to indicate its function
+ */
+
+/* =============================================================================
+   Base Canvas Cursor
+   ============================================================================= */
+
+.canvas-container {
+    cursor: default;
+}
+
+/* =============================================================================
+   Selection Tools
+   ============================================================================= */
+
+/* Select tool - default arrow cursor */
+.canvas-container[data-tool="select"] {
+    cursor: default;
+}
+
+/* Select tool when hovering over element */
+.canvas-container[data-tool="select"][data-hovering="true"] {
+    cursor: move;
+}
+
+/* Select tool when dragging */
+.canvas-container[data-tool="select"][data-dragging="true"] {
+    cursor: grabbing;
+}
+
+/* =============================================================================
+   Navigation Tools
+   ============================================================================= */
+
+/* Hand tool - grab cursor */
+.canvas-container[data-tool="hand"] {
+    cursor: grab;
+}
+
+/* Hand tool when panning */
+.canvas-container[data-tool="hand"][data-panning="true"],
+.canvas-container[data-tool="hand"].panning {
+    cursor: grabbing;
+}
+
+/* =============================================================================
+   Shape Creation Tools
+   ============================================================================= */
+
+/* Rectangle tool */
+.canvas-container[data-tool="rectangle"] {
+    cursor: crosshair;
+}
+
+/* Ellipse tool */
+.canvas-container[data-tool="ellipse"] {
+    cursor: crosshair;
+}
+
+/* Diamond tool */
+.canvas-container[data-tool="diamond"] {
+    cursor: crosshair;
+}
+
+/* Triangle tool */
+.canvas-container[data-tool="triangle"] {
+    cursor: crosshair;
+}
+
+/* Frame tool */
+.canvas-container[data-tool="frame"] {
+    cursor: crosshair;
+}
+
+/* =============================================================================
+   Line Tools
+   ============================================================================= */
+
+/* Line tool */
+.canvas-container[data-tool="line"] {
+    cursor: crosshair;
+}
+
+/* Arrow tool */
+.canvas-container[data-tool="arrow"] {
+    cursor: crosshair;
+}
+
+/* Connector tool */
+.canvas-container[data-tool="connector"] {
+    cursor: crosshair;
+}
+
+/* Connector tool when hovering over binding point */
+.canvas-container[data-tool="connector"][data-near-binding="true"] {
+    cursor: cell;
+}
+
+/* =============================================================================
+   Drawing Tools
+   ============================================================================= */
+
+/* Freedraw/Pencil tool */
+.canvas-container[data-tool="freedraw"] {
+    cursor: crosshair;
+}
+
+/* Freedraw when drawing */
+.canvas-container[data-tool="freedraw"][data-drawing="true"] {
+    cursor: crosshair;
+}
+
+/* =============================================================================
+   Text Tools
+   ============================================================================= */
+
+/* Text tool */
+.canvas-container[data-tool="text"] {
+    cursor: text;
+}
+
+/* Sticky note tool */
+.canvas-container[data-tool="sticky"] {
+    cursor: text;
+}
+
+/* =============================================================================
+   Eraser Tool
+   ============================================================================= */
+
+/* Eraser tool - custom eraser cursor or crosshair fallback */
+.canvas-container[data-tool="eraser"] {
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>') 12 12, crosshair;
+}
+
+/* Eraser when erasing */
+.canvas-container[data-tool="eraser"][data-erasing="true"] {
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ef4444" stroke="%23374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>') 12 12, crosshair;
+}
+
+/* =============================================================================
+   Resize Handles
+   ============================================================================= */
+
+/* Corner resize handles */
+.resize-handle[data-position="nw"],
+.resize-handle[data-position="se"] {
+    cursor: nwse-resize;
+}
+
+.resize-handle[data-position="ne"],
+.resize-handle[data-position="sw"] {
+    cursor: nesw-resize;
+}
+
+/* Edge resize handles */
+.resize-handle[data-position="n"],
+.resize-handle[data-position="s"] {
+    cursor: ns-resize;
+}
+
+.resize-handle[data-position="e"],
+.resize-handle[data-position="w"] {
+    cursor: ew-resize;
+}
+
+/* Rotation handle */
+.rotation-handle {
+    cursor: grab;
+}
+
+.rotation-handle:active {
+    cursor: grabbing;
+}
+
+/* =============================================================================
+   Interactive States
+   ============================================================================= */
+
+/* When canvas is in drawing mode */
+.canvas-container[data-drawing="true"] {
+    cursor: crosshair;
+}
+
+/* When canvas is in resizing mode */
+.canvas-container[data-resizing="true"] {
+    cursor: inherit;
+    /* Inherit from resize handle */
+}
+
+/* Disabled/locked state */
+.canvas-container[data-disabled="true"] {
+    cursor: not-allowed;
+}
+
+/* =============================================================================
+   Dark Mode Adjustments
+   ============================================================================= */
+
+.dark .canvas-container[data-tool="eraser"] {
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>') 12 12, crosshair;
+}
+
+.dark .canvas-container[data-tool="eraser"][data-erasing="true"] {
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ef4444" stroke="%23e5e7eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>') 12 12, crosshair;
+}

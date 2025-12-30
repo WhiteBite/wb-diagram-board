@@ -1,9 +1,12 @@
 /**
  * WB Panels - Barrel Export
- * 
- * Exports all panel components
+ *
+ * Exports all panel components for XY Flow
  */
 
-export { LayersPanel } from './LayersPanel';
-export { LayerItem } from './LayerItem';
-export type { LayerItemProps } from './LayerItem';
+// XY Flow panels
+export { XYFlowLayersPanel } from './XYFlowLayersPanel';
+export { XYFlowHistoryPanel } from './XYFlowHistoryPanel';
+
+// Theme panel
+export { ThemePanel } from './ThemePanel';

@@ -1,0 +1,688 @@
+/**
+ * WB Theme System - Animation Keyframes & Utilities
+ * 
+ * Animation definitions and transition utilities for:
+ * - Panel appearances
+ * - Button states
+ * - Selection indicators
+ * - Micro-interactions
+ */
+
+/* =============================================================================
+   PANEL ANIMATIONS - Slide & Fade
+   ============================================================================= */
+
+@keyframes panelSlideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes panelSlideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-1rem);
+    }
+}
+
+@keyframes panelSlideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes panelSlideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(1rem);
+    }
+}
+
+@keyframes panelSlideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes panelSlideOutDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+}
+
+@keyframes panelSlideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Panel animation classes */
+.animate-panel-in-left {
+    animation: panelSlideInLeft var(--duration-normal, 200ms) var(--ease-out, ease-out) forwards;
+}
+
+.animate-panel-out-left {
+    animation: panelSlideOutLeft var(--duration-fast, 150ms) var(--ease-in, ease-in) forwards;
+}
+
+.animate-panel-in-right {
+    animation: panelSlideInRight var(--duration-normal, 200ms) var(--ease-out, ease-out) forwards;
+}
+
+.animate-panel-out-right {
+    animation: panelSlideOutRight var(--duration-fast, 150ms) var(--ease-in, ease-in) forwards;
+}
+
+.animate-panel-in-up {
+    animation: panelSlideInUp var(--duration-normal, 200ms) var(--ease-out, ease-out) forwards;
+}
+
+.animate-panel-out-down {
+    animation: panelSlideOutDown var(--duration-fast, 150ms) var(--ease-in, ease-in) forwards;
+}
+
+.animate-panel-in-down {
+    animation: panelSlideInDown var(--duration-normal, 200ms) var(--ease-out, ease-out) forwards;
+}
+
+/* =============================================================================
+   MODAL & OVERLAY ANIMATIONS
+   ============================================================================= */
+
+@keyframes modalBackdropIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalBackdropOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes modalContentIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-0.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes modalContentOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95) translateY(-0.5rem);
+    }
+}
+
+.animate-modal-backdrop-in {
+    animation: modalBackdropIn var(--duration-normal, 200ms) var(--ease-out, ease-out) forwards;
+}
+
+.animate-modal-backdrop-out {
+    animation: modalBackdropOut var(--duration-fast, 150ms) var(--ease-in, ease-in) forwards;
+}
+
+.animate-modal-content-in {
+    animation: modalContentIn var(--duration-normal, 200ms) var(--ease-spring, cubic-bezier(0.175, 0.885, 0.32, 1.275)) forwards;
+}
+
+.animate-modal-content-out {
+    animation: modalContentOut var(--duration-fast, 150ms) var(--ease-in, ease-in) forwards;
+}
+
+/* =============================================================================
+   BUTTON MICRO-INTERACTIONS
+   ============================================================================= */
+
+@keyframes buttonPress {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes buttonRipple {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+@keyframes buttonSuccess {
+    0% {
+        background-color: var(--theme-primary);
+    }
+
+    50% {
+        background-color: var(--theme-success);
+    }
+
+    100% {
+        background-color: var(--theme-primary);
+    }
+}
+
+.animate-button-press {
+    animation: buttonPress var(--duration-fast, 150ms) var(--ease-out, ease-out);
+}
+
+/* Button with ripple effect */
+.btn-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+}
+
+.btn-ripple:active::after {
+    animation: buttonRipple var(--duration-slow, 300ms) var(--ease-out, ease-out);
+}
+
+/* =============================================================================
+   SELECTION INDICATORS
+   ============================================================================= */
+
+@keyframes selectionPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.2);
+    }
+}
+
+@keyframes selectionGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0.5rem rgba(99, 102, 241, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 1rem rgba(99, 102, 241, 0.5);
+    }
+}
+
+@keyframes selectionBorder {
+    0% {
+        border-color: var(--theme-primary);
+    }
+
+    50% {
+        border-color: var(--theme-primary-hover);
+    }
+
+    100% {
+        border-color: var(--theme-primary);
+    }
+}
+
+.animate-selection-pulse {
+    animation: selectionPulse 2s var(--ease-in-out, ease-in-out) infinite;
+}
+
+.animate-selection-glow {
+    animation: selectionGlow 2s var(--ease-in-out, ease-in-out) infinite;
+}
+
+/* Selection bounds animation for selected elements */
+.selection-bounds {
+    position: absolute;
+    border: 2px solid var(--canvas-selection);
+    border-radius: var(--radius-sm, 0.125rem);
+    pointer-events: none;
+    animation: selectionPulse 2s var(--ease-in-out, ease-in-out) infinite;
+}
+
+/* =============================================================================
+   TOOLTIP ANIMATIONS
+   ============================================================================= */
+
+@keyframes tooltipIn {
+    from {
+        opacity: 0;
+        transform: translateY(0.25rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes tooltipOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(0.25rem);
+    }
+}
+
+.animate-tooltip-in {
+    animation: tooltipIn var(--duration-fast, 150ms) var(--ease-out, ease-out) forwards;
+}
+
+.animate-tooltip-out {
+    animation: tooltipOut var(--duration-fastest, 100ms) var(--ease-in, ease-in) forwards;
+}
+
+/* =============================================================================
+   Scale Animations
+   ============================================================================= */
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes scaleDown {
+    from {
+        transform: scale(1.05);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scaleIn 300ms ease-in-out forwards;
+}
+
+.animate-scale-out {
+    animation: scaleOut 300ms ease-in-out forwards;
+}
+
+.animate-scale-up {
+    animation: scaleUp 300ms ease-in-out forwards;
+}
+
+.animate-scale-down {
+    animation: scaleDown 300ms ease-in-out forwards;
+}
+
+/* =============================================================================
+   Rotation Animations
+   ============================================================================= */
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinReverse {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+.animate-spin-reverse {
+    animation: spinReverse 1s linear infinite;
+}
+
+/* =============================================================================
+   Pulse Animations
+   ============================================================================= */
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes pulse-scale {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-scale {
+    animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* =============================================================================
+   Bounce Animations
+   ============================================================================= */
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-0.5rem);
+    }
+}
+
+@keyframes bounce-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+.animate-bounce-in {
+    animation: bounce-in 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* =============================================================================
+   Shake Animations
+   ============================================================================= */
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-0.25rem);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(0.25rem);
+    }
+}
+
+.animate-shake {
+    animation: shake 500ms ease-in-out;
+}
+
+/* =============================================================================
+   Flip Animations
+   ============================================================================= */
+
+@keyframes flipIn {
+    from {
+        opacity: 0;
+        transform: perspective(400px) rotateY(90deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: perspective(400px) rotateY(0deg);
+    }
+}
+
+@keyframes flipOut {
+    from {
+        opacity: 1;
+        transform: perspective(400px) rotateY(0deg);
+    }
+
+    to {
+        opacity: 0;
+        transform: perspective(400px) rotateY(90deg);
+    }
+}
+
+.animate-flip-in {
+    animation: flipIn 600ms ease-in-out forwards;
+}
+
+.animate-flip-out {
+    animation: flipOut 600ms ease-in-out forwards;
+}
+
+/* =============================================================================
+   Transition Utilities
+   ============================================================================= */
+
+.transition-fast {
+    transition: all 150ms ease-out;
+}
+
+.transition-normal {
+    transition: all 300ms ease-in-out;
+}
+
+.transition-slow {
+    transition: all 500ms ease-in;
+}
+
+.transition-colors {
+    transition: color 300ms ease-in-out, background-color 300ms ease-in-out,
+        border-color 300ms ease-in-out;
+}
+
+.transition-transform {
+    transition: transform 300ms ease-in-out;
+}
+
+.transition-opacity {
+    transition: opacity 300ms ease-in-out;
+}
+
+.transition-shadow {
+    transition: box-shadow 300ms ease-in-out;
+}
+
+/* =============================================================================
+   Hover Effects
+   ============================================================================= */
+
+.hover-scale {
+    transition: transform 200ms ease-out;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.hover-lift {
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.hover-glow {
+    transition: box-shadow 200ms ease-out;
+}
+
+.hover-glow:hover {
+    box-shadow: 0 0 1rem var(--theme-primary);
+}
+
+/* =============================================================================
+   Disable Animations
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.no-animations {
+    animation: none !important;
+    transition: none !important;
+}
+
+.no-animations * {
+    animation: none !important;
+    transition: none !important;
+}

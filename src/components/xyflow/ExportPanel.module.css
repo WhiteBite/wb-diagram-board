@@ -1,0 +1,930 @@
+/**
+ * ExportPanel - Styles for XY Flow export panel with preview
+ * 
+ * Features:
+ * - Full panel with preview area
+ * - Export options and settings
+ * - Loading states
+ * - Dark mode support
+ * - Accessible focus states
+ */
+
+/* =============================================================================
+   Container
+   ============================================================================= */
+
+.container {
+    position: relative;
+    display: inline-block;
+}
+
+/* =============================================================================
+   Trigger Button
+   ============================================================================= */
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-panel, #ffffff);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    color: var(--color-text, #374151);
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.button:hover:not(:disabled) {
+    background-color: var(--color-hover, #f9fafb);
+    border-color: var(--color-border-hover, #d1d5db);
+}
+
+.button:focus-visible {
+    outline: 2px solid var(--color-primary, #6366f1);
+    outline-offset: 2px;
+}
+
+.buttonActive {
+    background-color: var(--color-selected, #eef2ff);
+    border-color: var(--color-primary, #6366f1);
+}
+
+.buttonIcon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.buttonLabel {
+    font-weight: 500;
+}
+
+.buttonShortcut {
+    font-size: 0.6875rem;
+    opacity: 0.6;
+    margin-left: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* =============================================================================
+   Panel (Full Export Panel with Preview)
+   ============================================================================= */
+
+.panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 22rem;
+    background-color: var(--color-panel, #ffffff);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.75rem;
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    animation: panelFadeIn 0.2s ease-out;
+}
+
+@keyframes panelFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+.panelTitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text, #374151);
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    color: var(--color-text-muted, #6b7280);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.closeButton:hover {
+    background-color: var(--color-hover, #f3f4f6);
+    color: var(--color-text, #374151);
+}
+
+.panelBody {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* =============================================================================
+   Preview Area
+   ============================================================================= */
+
+.previewSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.previewLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.previewContainer {
+    position: relative;
+    width: 100%;
+    height: 10rem;
+    background-color: var(--color-bg-subtle, #f9fafb);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.previewCanvas {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.previewEmpty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted, #6b7280);
+    font-size: 0.8125rem;
+}
+
+.previewEmptyIcon {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+.previewMinimap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.previewNode {
+    position: absolute;
+    background-color: var(--color-primary-light, #c7d2fe);
+    border: 1px solid var(--color-primary, #6366f1);
+    border-radius: 0.125rem;
+}
+
+.previewNodeSelected {
+    background-color: var(--color-primary, #6366f1);
+    border-color: var(--color-primary-dark, #4f46e5);
+}
+
+.previewEdge {
+    position: absolute;
+    background-color: var(--color-border, #9ca3af);
+    height: 1px;
+    transform-origin: left center;
+}
+
+.previewBounds {
+    position: absolute;
+    border: 2px dashed var(--color-primary, #6366f1);
+    background-color: rgba(99, 102, 241, 0.05);
+    border-radius: 0.25rem;
+    pointer-events: none;
+}
+
+.previewInfo {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    font-size: 0.6875rem;
+    border-radius: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* =============================================================================
+   Export Scope
+   ============================================================================= */
+
+.scopeSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.scopeLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.scopeButtons {
+    display: flex;
+    gap: 0.25rem;
+    background-color: var(--color-bg-subtle, #f3f4f6);
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+}
+
+.scopeButton {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #6b7280);
+    transition: all 0.15s ease;
+}
+
+.scopeButton:hover:not(:disabled) {
+    color: var(--color-text, #374151);
+    background-color: var(--color-hover, #ffffff);
+}
+
+.scopeButtonActive {
+    background-color: var(--color-panel, #ffffff);
+    color: var(--color-primary, #6366f1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.scopeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =============================================================================
+   Format Selection
+   ============================================================================= */
+
+.formatSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formatLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.formatGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.formatButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    background-color: var(--color-bg-subtle, #f9fafb);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.formatButton:hover:not(:disabled) {
+    background-color: var(--color-hover, #f3f4f6);
+    border-color: var(--color-border-hover, #d1d5db);
+}
+
+.formatButtonActive {
+    background-color: var(--color-selected, #eef2ff);
+    border-color: var(--color-primary, #6366f1);
+}
+
+.formatIcon {
+    font-size: 1.25rem;
+}
+
+.formatName {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-text, #374151);
+}
+
+/* =============================================================================
+   Settings Section
+   ============================================================================= */
+
+.settingsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.settingsLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.settingRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.settingName {
+    font-size: 0.8125rem;
+    color: var(--color-text, #374151);
+}
+
+.settingControl {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Quality/Scale buttons */
+.qualityButtons {
+    display: flex;
+    gap: 0.125rem;
+    background-color: var(--color-bg-subtle, #f3f4f6);
+    padding: 0.125rem;
+    border-radius: 0.375rem;
+}
+
+.qualityButton {
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #6b7280);
+    transition: all 0.15s ease;
+}
+
+.qualityButton:hover:not(:disabled) {
+    color: var(--color-text, #374151);
+}
+
+.qualityButtonActive {
+    background-color: var(--color-panel, #ffffff);
+    color: var(--color-primary, #6366f1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Padding input */
+.paddingInput {
+    width: 4rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    text-align: center;
+    color: var(--color-text, #374151);
+    background-color: var(--color-panel, #ffffff);
+}
+
+.paddingInput:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.paddingUnit {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6b7280);
+}
+
+/* Checkbox */
+.checkbox {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    appearance: none;
+    background-color: var(--color-panel, #ffffff);
+    border: 1px solid var(--color-border, #d1d5db);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.checkbox:checked {
+    background-color: var(--color-primary, #6366f1);
+    border-color: var(--color-primary, #6366f1);
+}
+
+.checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 0.3rem;
+    top: 0.1rem;
+    width: 0.25rem;
+    height: 0.5rem;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox:focus-visible {
+    outline: 2px solid var(--color-primary, #6366f1);
+    outline-offset: 2px;
+}
+
+/* =============================================================================
+   Footer / Actions
+   ============================================================================= */
+
+.panelFooter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+.exportInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6b7280);
+}
+
+.exportSize {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.exportButton {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.625rem 1rem;
+    background-color: var(--color-primary, #6366f1);
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+}
+
+.exportButton:hover:not(:disabled) {
+    background-color: var(--color-primary-dark, #4f46e5);
+}
+
+.exportButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.copyButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 0.75rem;
+    background-color: var(--color-panel, #ffffff);
+    color: var(--color-text, #374151);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    transition: all 0.15s ease;
+}
+
+.copyButton:hover:not(:disabled) {
+    background-color: var(--color-hover, #f3f4f6);
+    border-color: var(--color-border-hover, #d1d5db);
+}
+
+.copyButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.copyButtonSuccess {
+    background-color: var(--color-success-bg, #dcfce7);
+    border-color: var(--color-success, #22c55e);
+    color: var(--color-success, #22c55e);
+}
+
+/* =============================================================================
+   Progress Indicator
+   ============================================================================= */
+
+.progressOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+}
+
+.progressSpinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--color-border, #e5e7eb);
+    border-top-color: var(--color-primary, #6366f1);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.progressText {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted, #6b7280);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============================================================================
+   Legacy Dropdown (for backward compatibility)
+   ============================================================================= */
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    min-width: 12rem;
+    background-color: var(--color-panel, #ffffff);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownHeader {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #6b7280);
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    color: var(--color-text, #374151);
+    text-align: left;
+    transition: background-color 0.1s ease;
+}
+
+.dropdownItem:hover:not(:disabled) {
+    background-color: var(--color-hover, #f3f4f6);
+}
+
+.dropdownItem:focus-visible {
+    outline: none;
+    background-color: var(--color-selected, #eef2ff);
+}
+
+.dropdownItem:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dropdownItemLast {
+    background-color: var(--color-selected-subtle, #f0f9ff);
+}
+
+.optionIcon {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.optionLabel {
+    flex: 1;
+}
+
+.optionShortcut {
+    font-size: 0.6875rem;
+    opacity: 0.5;
+    padding: 0.125rem 0.375rem;
+    background-color: var(--color-bg-subtle, #f3f4f6);
+    border-radius: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+.exporting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6b7280);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+.spinner {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 2px solid var(--color-border, #e5e7eb);
+    border-top-color: var(--color-primary, #6366f1);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.divider {
+    height: 1px;
+    margin: 0.25rem 0;
+    background-color: var(--color-border, #e5e7eb);
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark .button {
+    background-color: var(--color-panel-dark, #1e293b);
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .button:hover:not(:disabled) {
+    background-color: var(--color-hover-dark, #334155);
+    border-color: var(--color-border-hover-dark, #475569);
+}
+
+.dark .buttonActive {
+    background-color: var(--color-selected-dark, #312e81);
+    border-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .panel {
+    background-color: var(--color-panel-dark, #1e293b);
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .panelHeader {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .panelTitle {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .closeButton {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .closeButton:hover {
+    background-color: var(--color-hover-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .previewContainer {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .previewLabel,
+.dark .scopeLabel,
+.dark .formatLabel,
+.dark .settingsLabel {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .scopeButtons,
+.dark .qualityButtons {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .scopeButton,
+.dark .qualityButton {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .scopeButton:hover:not(:disabled),
+.dark .qualityButton:hover:not(:disabled) {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .scopeButtonActive,
+.dark .qualityButtonActive {
+    background-color: var(--color-panel-dark, #1e293b);
+    color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .formatButton {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .formatButton:hover:not(:disabled) {
+    background-color: var(--color-hover-dark, #334155);
+}
+
+.dark .formatButtonActive {
+    background-color: var(--color-selected-dark, #312e81);
+    border-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .formatName,
+.dark .settingName {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .paddingInput {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .checkbox {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+    border-color: var(--color-border-dark, #475569);
+}
+
+.dark .checkbox:checked {
+    background-color: var(--color-primary-dark, #818cf8);
+    border-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .panelFooter {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .exportInfo {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .copyButton {
+    background-color: var(--color-panel-dark, #1e293b);
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .copyButton:hover:not(:disabled) {
+    background-color: var(--color-hover-dark, #334155);
+}
+
+.dark .progressOverlay {
+    background-color: rgba(15, 23, 42, 0.9);
+}
+
+.dark .progressSpinner {
+    border-color: var(--color-border-dark, #334155);
+    border-top-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .progressText {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+/* Legacy dropdown dark mode */
+.dark .dropdown {
+    background-color: var(--color-panel-dark, #1e293b);
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .dropdownHeader {
+    color: var(--color-text-muted-dark, #94a3b8);
+    border-color: var(--color-border-dark, #334155);
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .dropdownItem {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .dropdownItem:hover:not(:disabled) {
+    background-color: var(--color-hover-dark, #334155);
+}
+
+.dark .optionShortcut {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .exporting {
+    color: var(--color-text-muted-dark, #94a3b8);
+    border-color: var(--color-border-dark, #334155);
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .spinner {
+    border-color: var(--color-border-dark, #334155);
+    border-top-color: var(--color-primary-dark, #818cf8);
+}
+
+/* =============================================================================
+   Reduced Motion
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .panel,
+    .dropdown,
+    .button,
+    .dropdownItem,
+    .scopeButton,
+    .qualityButton,
+    .formatButton,
+    .exportButton,
+    .copyButton {
+        transition: none;
+        animation: none;
+    }
+
+    .spinner,
+    .progressSpinner {
+        animation: none;
+    }
+}

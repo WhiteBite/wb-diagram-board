@@ -1,0 +1,652 @@
+/**
+ * ImportPanel - Styles for XY Flow import panel
+ * 
+ * Features:
+ * - Dropdown menu with import options
+ * - Modal dialog for text input
+ * - File drop zone
+ * - Loading states
+ * - Dark mode support
+ * - Accessible focus states
+ */
+
+/* =============================================================================
+   Container
+   ============================================================================= */
+
+.container {
+    position: relative;
+    display: inline-block;
+}
+
+/* =============================================================================
+   Trigger Button
+   ============================================================================= */
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-panel, #ffffff);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    color: var(--color-text, #374151);
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.button:hover:not(:disabled) {
+    background-color: var(--color-hover, #f9fafb);
+    border-color: var(--color-border-hover, #d1d5db);
+}
+
+.button:focus-visible {
+    outline: 2px solid var(--color-primary, #6366f1);
+    outline-offset: 2px;
+}
+
+.buttonActive {
+    background-color: var(--color-selected, #eef2ff);
+    border-color: var(--color-primary, #6366f1);
+}
+
+.buttonIcon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.buttonLabel {
+    font-weight: 500;
+}
+
+.buttonShortcut {
+    font-size: 0.6875rem;
+    opacity: 0.6;
+    margin-left: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* =============================================================================
+   Dropdown Menu
+   ============================================================================= */
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    min-width: 13rem;
+    background-color: var(--color-panel, #ffffff);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 0.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownHeader {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #6b7280);
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+/* =============================================================================
+   Dropdown Items
+   ============================================================================= */
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    color: var(--color-text, #374151);
+    text-align: left;
+    transition: background-color 0.1s ease;
+}
+
+.dropdownItem:hover:not(:disabled) {
+    background-color: var(--color-hover, #f3f4f6);
+}
+
+.dropdownItem:focus-visible {
+    outline: none;
+    background-color: var(--color-selected, #eef2ff);
+}
+
+.dropdownItem:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.optionIcon {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.optionLabel {
+    flex: 1;
+}
+
+.optionShortcut {
+    font-size: 0.6875rem;
+    opacity: 0.5;
+    padding: 0.125rem 0.375rem;
+    background-color: var(--color-bg-subtle, #f3f4f6);
+    border-radius: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* =============================================================================
+   Loading State
+   ============================================================================= */
+
+.importing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6b7280);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+.spinner {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 2px solid var(--color-border, #e5e7eb);
+    border-top-color: var(--color-primary, #6366f1);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============================================================================
+   Modal Overlay
+   ============================================================================= */
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: overlayFadeIn 0.2s ease-out;
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* =============================================================================
+   Modal Container
+   ============================================================================= */
+
+.modal {
+    width: 90%;
+    max-width: 40rem;
+    max-height: 80vh;
+    background-color: var(--color-panel, #ffffff);
+    border-radius: 0.75rem;
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-1rem) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.modalTitle {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text, #1f2937);
+}
+
+.modalCloseButton {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--color-text-muted, #6b7280);
+    transition: background-color 0.15s ease;
+}
+
+.modalCloseButton:hover {
+    background-color: var(--color-hover, #f3f4f6);
+}
+
+.modalCloseButton:focus-visible {
+    outline: 2px solid var(--color-primary, #6366f1);
+    outline-offset: 2px;
+}
+
+.modalBody {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    overflow: auto;
+}
+
+.modalFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    background-color: var(--color-bg-subtle, #f9fafb);
+}
+
+/* =============================================================================
+   Textarea
+   ============================================================================= */
+
+.textarea {
+    width: 100%;
+    height: 18rem;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    line-height: 1.5;
+    border: 1px solid var(--color-border, #d1d5db);
+    border-radius: 0.5rem;
+    resize: vertical;
+    background-color: var(--color-bg, #ffffff);
+    color: var(--color-text, #1f2937);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.textarea::placeholder {
+    color: var(--color-text-muted, #9ca3af);
+}
+
+/* =============================================================================
+   File Drop Zone
+   ============================================================================= */
+
+.dropZone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    border: 2px dashed var(--color-border, #d1d5db);
+    border-radius: 0.5rem;
+    background-color: var(--color-bg-subtle, #f9fafb);
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.dropZone:hover {
+    border-color: var(--color-primary, #6366f1);
+    background-color: var(--color-selected, #eef2ff);
+}
+
+.dropZoneActive {
+    border-color: var(--color-primary, #6366f1);
+    background-color: var(--color-selected, #eef2ff);
+}
+
+.dropZoneIcon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.dropZoneText {
+    font-size: 0.875rem;
+    color: var(--color-text-muted, #6b7280);
+    text-align: center;
+}
+
+.dropZoneHint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #9ca3af);
+}
+
+/* =============================================================================
+   Footer Elements
+   ============================================================================= */
+
+.hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6b7280);
+}
+
+.buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cancelButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background-color: transparent;
+    border: 1px solid var(--color-border, #d1d5db);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    color: var(--color-text, #374151);
+    transition: background-color 0.15s ease;
+}
+
+.cancelButton:hover {
+    background-color: var(--color-hover, #f3f4f6);
+}
+
+.cancelButton:focus-visible {
+    outline: 2px solid var(--color-primary, #6366f1);
+    outline-offset: 2px;
+}
+
+.importButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--color-primary, #6366f1);
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    color: #ffffff;
+    transition: background-color 0.15s ease;
+}
+
+.importButton:hover:not(:disabled) {
+    background-color: var(--color-primary-hover, #4f46e5);
+}
+
+.importButton:focus-visible {
+    outline: 2px solid var(--color-primary, #6366f1);
+    outline-offset: 2px;
+}
+
+.importButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =============================================================================
+   Import Options (Merge/Replace)
+   ============================================================================= */
+
+.importOptions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-text, #374151);
+    cursor: pointer;
+}
+
+.radioLabel input {
+    accent-color: var(--color-primary, #6366f1);
+}
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark .button {
+    background-color: var(--color-panel-dark, #1e293b);
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .button:hover:not(:disabled) {
+    background-color: var(--color-hover-dark, #334155);
+    border-color: var(--color-border-hover-dark, #475569);
+}
+
+.dark .buttonActive {
+    background-color: var(--color-selected-dark, #312e81);
+    border-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .dropdown {
+    background-color: var(--color-panel-dark, #1e293b);
+    border-color: var(--color-border-dark, #334155);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.3),
+        0 2px 4px -2px rgba(0, 0, 0, 0.2);
+}
+
+.dark .dropdownHeader {
+    color: var(--color-text-muted-dark, #94a3b8);
+    border-color: var(--color-border-dark, #334155);
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .dropdownItem {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .dropdownItem:hover:not(:disabled) {
+    background-color: var(--color-hover-dark, #334155);
+}
+
+.dark .dropdownItem:focus-visible {
+    background-color: var(--color-selected-dark, #312e81);
+}
+
+.dark .optionShortcut {
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .importing {
+    color: var(--color-text-muted-dark, #94a3b8);
+    border-color: var(--color-border-dark, #334155);
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .spinner {
+    border-color: var(--color-border-dark, #334155);
+    border-top-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .modalOverlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark .modal {
+    background-color: var(--color-panel-dark, #1e293b);
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+.dark .modalHeader {
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .modalTitle {
+    color: var(--color-text-dark, #f1f5f9);
+}
+
+.dark .modalCloseButton {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .modalCloseButton:hover {
+    background-color: var(--color-hover-dark, #334155);
+}
+
+.dark .modalFooter {
+    border-color: var(--color-border-dark, #334155);
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .textarea {
+    background-color: var(--color-bg-dark, #0f172a);
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .textarea:focus {
+    border-color: var(--color-primary-dark, #818cf8);
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+.dark .textarea::placeholder {
+    color: var(--color-text-muted-dark, #64748b);
+}
+
+.dark .dropZone {
+    border-color: var(--color-border-dark, #334155);
+    background-color: var(--color-bg-subtle-dark, #0f172a);
+}
+
+.dark .dropZone:hover,
+.dark .dropZoneActive {
+    border-color: var(--color-primary-dark, #818cf8);
+    background-color: var(--color-selected-dark, #312e81);
+}
+
+.dark .dropZoneText {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .dropZoneHint {
+    color: var(--color-text-muted-dark, #64748b);
+}
+
+.dark .hint {
+    color: var(--color-text-muted-dark, #94a3b8);
+}
+
+.dark .cancelButton {
+    border-color: var(--color-border-dark, #334155);
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .cancelButton:hover {
+    background-color: var(--color-hover-dark, #334155);
+}
+
+.dark .importButton {
+    background-color: var(--color-primary-dark, #818cf8);
+}
+
+.dark .importButton:hover:not(:disabled) {
+    background-color: var(--color-primary-hover-dark, #6366f1);
+}
+
+.dark .importOptions {
+    border-color: var(--color-border-dark, #334155);
+}
+
+.dark .radioLabel {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+/* =============================================================================
+   Reduced Motion
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .dropdown,
+    .button,
+    .dropdownItem,
+    .modalOverlay,
+    .modal,
+    .textarea,
+    .dropZone {
+        transition: none;
+        animation: none;
+    }
+
+    .spinner {
+        animation: none;
+    }
+}

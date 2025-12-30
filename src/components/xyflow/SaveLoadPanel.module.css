@@ -1,0 +1,324 @@
+/**
+ * SaveLoadPanel Styles
+ */
+
+.panel {
+    position: absolute;
+    top: 4rem;
+    right: 1rem;
+    width: 20rem;
+    max-height: calc(100vh - 6rem);
+    background: var(--color-bg-primary, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+    background: var(--color-bg-secondary, #f8fafc);
+}
+
+.title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #1e293b);
+    margin: 0;
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    color: var(--color-text-secondary, #64748b);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.closeButton:hover {
+    background: var(--color-bg-hover, #f1f5f9);
+    color: var(--color-text-primary, #1e293b);
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+/* Current Diagram Section */
+.section {
+    margin-bottom: 1.5rem;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+}
+
+.sectionTitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary, #64748b);
+    margin: 0 0 0.75rem 0;
+}
+
+.currentDiagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nameInput {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 0.375rem;
+    background: var(--color-bg-primary, #ffffff);
+    color: var(--color-text-primary, #1e293b);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.nameInput:focus {
+    outline: none;
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #64748b);
+}
+
+.statusDot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+}
+
+.statusDot.saved {
+    background: var(--color-success, #22c55e);
+}
+
+.statusDot.dirty {
+    background: var(--color-warning, #f59e0b);
+}
+
+.statusDot.saving {
+    background: var(--color-primary, #3b82f6);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Action Buttons */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.buttonPrimary {
+    background: var(--color-primary, #3b82f6);
+    border: 1px solid var(--color-primary, #3b82f6);
+    color: white;
+}
+
+.buttonPrimary:hover {
+    background: var(--color-primary-hover, #2563eb);
+    border-color: var(--color-primary-hover, #2563eb);
+}
+
+.buttonSecondary {
+    background: var(--color-bg-primary, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    color: var(--color-text-primary, #1e293b);
+}
+
+.buttonSecondary:hover {
+    background: var(--color-bg-hover, #f1f5f9);
+    border-color: var(--color-border-hover, #cbd5e1);
+}
+
+.buttonDanger {
+    background: var(--color-bg-primary, #ffffff);
+    border: 1px solid var(--color-danger, #ef4444);
+    color: var(--color-danger, #ef4444);
+}
+
+.buttonDanger:hover {
+    background: var(--color-danger, #ef4444);
+    color: white;
+}
+
+.buttonIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Diagram List */
+.diagramList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.diagramItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-bg-secondary, #f8fafc);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.diagramItem:hover {
+    background: var(--color-bg-hover, #f1f5f9);
+    border-color: var(--color-border-hover, #cbd5e1);
+}
+
+.diagramItem.active {
+    border-color: var(--color-primary, #3b82f6);
+    background: rgb(59 130 246 / 0.05);
+}
+
+.diagramInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.diagramName {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #1e293b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 0 0.25rem 0;
+}
+
+.diagramMeta {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #64748b);
+}
+
+.diagramActions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    color: var(--color-text-secondary, #64748b);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.iconButton:hover {
+    background: var(--color-bg-hover, #e2e8f0);
+    color: var(--color-text-primary, #1e293b);
+}
+
+.iconButton.danger:hover {
+    background: rgb(239 68 68 / 0.1);
+    color: var(--color-danger, #ef4444);
+}
+
+/* Empty State */
+.emptyState {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-text-secondary, #64748b);
+}
+
+.emptyIcon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 0.75rem;
+    opacity: 0.5;
+}
+
+.emptyText {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* File Actions */
+.fileActions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border, #e2e8f0);
+    margin-top: 1rem;
+}
+
+.fileActions .button {
+    flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+}

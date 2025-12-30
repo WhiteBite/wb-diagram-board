@@ -13,7 +13,8 @@ export default defineConfig({
     ],
 
     use: {
-        baseURL: 'http://localhost:5179/wb-diagram-board',
+        // Use port 5180 for XY Flow dev server
+        baseURL: 'http://localhost:5180/wb-diagram-board',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
@@ -29,7 +30,7 @@ export default defineConfig({
 
     // webServer: {
     //     command: 'npm run dev',
-    //     url: 'http://localhost:5177/wb-diagram-board',
+    //     url: 'http://localhost:5180/wb-diagram-board',
     //     reuseExistingServer: !process.env.CI,
     //     timeout: 120000,
     // },

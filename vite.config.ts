@@ -17,5 +17,19 @@ export default defineConfig({
     build: {
         outDir: 'dist',
         sourcemap: true,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Core React vendor chunk
+                    'vendor-react': ['react', 'react-dom'],
+                    // XY Flow chunk (large library)
+                    'vendor-xyflow': ['@xyflow/react'],
+                    // Diagram converter chunk
+                    'vendor-diagram': ['@whitebite/diagram-converter'],
+                    // Zustand state management
+                    'vendor-zustand': ['zustand'],
+                },
+            },
+        },
     },
 });

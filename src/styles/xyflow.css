@@ -1,0 +1,559 @@
+/**
+ * XY Flow Custom Styles
+ * 
+ * Custom styling for XY Flow (React Flow) components
+ */
+
+/* =============================================================================
+   CSS Variables - Design Tokens
+   ============================================================================= */
+
+:root {
+    /* Elevation System - Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-blur: blur(12px);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    --glass-inner-border: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Dark mode variables */
+.dark {
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+
+    --glass-bg: rgba(30, 41, 59, 0.85);
+    --glass-blur: blur(12px);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    --glass-inner-border: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* =============================================================================
+   Node Handles
+   ============================================================================= */
+
+.react-flow__handle {
+    width: 8px !important;
+    height: 8px !important;
+    background: #3b82f6 !important;
+    border: 1.5px solid #fff !important;
+    border-radius: 50% !important;
+    opacity: 0;
+    transition: all 0.2s ease;
+    pointer-events: all !important;
+    cursor: crosshair !important;
+    z-index: 100 !important;
+}
+
+/* Position handles outside the node */
+.react-flow__handle.react-flow__handle-top {
+    top: -4px !important;
+}
+
+.react-flow__handle.react-flow__handle-right {
+    right: -4px !important;
+}
+
+.react-flow__handle.react-flow__handle-bottom {
+    bottom: -4px !important;
+}
+
+.react-flow__handle.react-flow__handle-left {
+    left: -4px !important;
+}
+
+/* Show handles on hover and selection */
+.react-flow__node:hover .react-flow__handle,
+.react-flow__node.selected .react-flow__handle {
+    opacity: 1;
+}
+
+/* Handle hover state - NO transform to prevent movement! */
+.react-flow__handle:hover {
+    background: #2563eb !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Source handles - blue */
+.react-flow__handle-source {
+    background: #3b82f6 !important;
+}
+
+/* Target handles - green for visual distinction */
+.react-flow__handle-target {
+    background: #10b981 !important;
+}
+
+.react-flow__handle-target:hover {
+    background: #059669 !important;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* When connecting, highlight valid targets */
+.react-flow__handle.connectingto,
+.react-flow__handle.valid {
+    background: #10b981 !important;
+    box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.4) !important;
+    opacity: 1 !important;
+}
+
+/* Show ALL handles during connection */
+.react-flow.connecting .react-flow__handle {
+    opacity: 1 !important;
+}
+
+/* =============================================================================
+   Connection Line
+   ============================================================================= */
+
+.react-flow__connection-line {
+    stroke: #3b82f6;
+    stroke-width: 2;
+    stroke-dasharray: 5, 5;
+    animation: connection-dash 0.5s linear infinite;
+}
+
+@keyframes connection-dash {
+    to {
+        stroke-dashoffset: -10;
+    }
+}
+
+/* Dark mode connection line */
+.dark .react-flow__connection-line {
+    stroke: #60a5fa;
+}
+
+/* =============================================================================
+   Selection Box
+   ============================================================================= */
+
+.react-flow__selection {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px dashed #3b82f6;
+}
+
+.react-flow__nodesselection-rect {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid #3b82f6;
+}
+
+/* =============================================================================
+   Controls
+   ============================================================================= */
+
+.react-flow__controls {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.react-flow__controls-button {
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.react-flow__controls-button:last-child {
+    border-bottom: none;
+}
+
+.react-flow__controls-button:hover {
+    background: #f3f4f6;
+}
+
+.react-flow__controls-button svg {
+    fill: #374151;
+    max-width: 1rem;
+    max-height: 1rem;
+}
+
+/* =============================================================================
+   MiniMap
+   ============================================================================= */
+
+.react-flow__minimap {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    background: #ffffff;
+}
+
+.react-flow__minimap:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.react-flow__minimap-mask {
+    fill: rgba(59, 130, 246, 0.15);
+    transition: fill 0.2s ease;
+}
+
+.react-flow__minimap:hover .react-flow__minimap-mask {
+    fill: rgba(59, 130, 246, 0.25);
+}
+
+/* Minimap nodes - better visibility */
+.react-flow__minimap-node {
+    fill: #64748b;
+    stroke: none;
+    rx: 2;
+    ry: 2;
+}
+
+/* =============================================================================
+   Custom Overlays and Controls
+   ============================================================================= */
+
+.xyflow-controls-custom {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zoom-to-fit-button {
+    width: 36px;
+    height: 36px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+.zoom-to-fit-button:hover {
+    background-color: #f8fafc;
+    color: #1e293b;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .zoom-to-fit-button {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #94a3b8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dark .zoom-to-fit-button:hover {
+    background-color: #334155;
+    color: #f1f5f9;
+    border-color: #475569;
+}
+
+/* Glassmorphism for overlays */
+.xyflow-overlays>div>div {
+    backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dark .xyflow-overlays>div>div {
+    background-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+/* Node shadows and polish */
+.react-flow__node {
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1),
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.react-flow__node:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__node.selected {
+    box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.2), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+}
+
+/* =============================================================================
+   Drag & Drop Visual Feedback
+   ============================================================================= */
+
+/* Dragging state - node "lifts up" */
+.react-flow__node.dragging {
+    opacity: 0.85;
+    transform: scale(1.02);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.2),
+        0 10px 15px -5px rgba(0, 0, 0, 0.1);
+    z-index: 1000 !important;
+    cursor: grabbing !important;
+    /* Disable transition during drag for responsive feel */
+    transition: none !important;
+}
+
+/* Landing animation - smooth return when drag ends */
+.react-flow__node:not(.dragging) {
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1),
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+/* Dark mode dragging */
+.dark .react-flow__node.dragging {
+    opacity: 0.85;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5),
+        0 10px 15px -5px rgba(0, 0, 0, 0.4);
+}
+
+.dark .react-flow__node:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+}
+
+.dark .react-flow__node.selected {
+    box-shadow: 0 20px 25px -5px rgba(96, 165, 250, 0.2), 0 8px 10px -6px rgba(96, 165, 250, 0.1);
+}
+
+/* =============================================================================
+   Edges
+   ============================================================================= */
+
+.react-flow__edge-path {
+    stroke: #1e293b;
+    stroke-width: 2;
+    cursor: pointer;
+}
+
+/* Make edges easier to click */
+.react-flow__edge-interaction {
+    stroke-width: 20 !important;
+    stroke: transparent !important;
+    cursor: pointer !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+    stroke: #3b82f6;
+    stroke-width: 3;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+    stroke: #3b82f6;
+}
+
+/* Animated edges */
+.react-flow__edge.animated .react-flow__edge-path {
+    stroke-dasharray: 5;
+    animation: dashdraw 0.5s linear infinite;
+}
+
+@keyframes dashdraw {
+    from {
+        stroke-dashoffset: 10;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* =============================================================================
+   Nodes
+   ============================================================================= */
+
+.react-flow__node {
+    cursor: grab;
+}
+
+.react-flow__node:active {
+    cursor: grabbing;
+}
+
+.react-flow__node.selected {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* =============================================================================
+   Background
+   ============================================================================= */
+
+.react-flow__background {
+    background-color: #fafafa;
+}
+
+/* =============================================================================
+   Dark Mode Support
+   ============================================================================= */
+
+.dark .react-flow__background {
+    background-color: #1e293b;
+}
+
+.dark .react-flow__background pattern circle {
+    fill: #475569;
+}
+
+.dark .react-flow__controls {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .react-flow__controls-button {
+    background: #334155;
+    color: #f1f5f9;
+    border-color: #475569;
+}
+
+.dark .react-flow__controls-button:hover {
+    background: #475569;
+}
+
+.dark .react-flow__controls-button svg {
+    fill: #f1f5f9;
+}
+
+.dark .react-flow__minimap {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dark .react-flow__minimap:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    border-color: rgba(96, 165, 250, 0.3);
+}
+
+.dark .react-flow__minimap-mask {
+    fill: rgba(96, 165, 250, 0.2);
+}
+
+.dark .react-flow__minimap:hover .react-flow__minimap-mask {
+    fill: rgba(96, 165, 250, 0.3);
+}
+
+.dark .react-flow__minimap-node {
+    fill: #94a3b8;
+}
+
+.dark .react-flow__edge-path {
+    stroke: #94a3b8;
+}
+
+.dark .react-flow__connection-line {
+    stroke: #60a5fa;
+}
+
+.dark .react-flow__handle {
+    background: #60a5fa;
+    border-color: #1e293b;
+}
+
+.dark .react-flow__node.selected {
+    outline-color: #60a5fa;
+}
+
+/* =============================================================================
+   Custom Node Styles
+   ============================================================================= */
+
+.diagram-node {
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: Inter, system-ui, sans-serif;
+    text-align: center;
+    min-width: 6rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.15s ease;
+}
+
+.diagram-node:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.diagram-node.selected {
+    box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.diagram-node .node-content {
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Rectangle node */
+.diagram-node.rectangle {
+    border-radius: 0.25rem;
+}
+
+/* Ellipse node */
+.diagram-node.ellipse {
+    border-radius: 50%;
+}
+
+/* Diamond node */
+.diagram-node.diamond {
+    transform: rotate(45deg);
+}
+
+.diagram-node.diamond .node-content {
+    transform: rotate(-45deg);
+}
+
+/* Text node */
+.diagram-node.text {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Sticky node */
+.diagram-node.sticky {
+    border-radius: 0;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 1rem;
+}
+
+/* Swimlane node */
+.diagram-node.swimlane {
+    border-radius: 0;
+    padding: 0;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.diagram-node.swimlane .swimlane-header {
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+.diagram-node.swimlane .swimlane-content {
+    flex: 1;
+    padding: 1rem;
+}

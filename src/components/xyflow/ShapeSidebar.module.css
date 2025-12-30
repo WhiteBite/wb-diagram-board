@@ -1,0 +1,244 @@
+/**
+ * ShapeSidebar Styles
+ */
+
+.sidebar {
+    width: 220px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.dark {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: #1e293b;
+}
+
+.header {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dark .header {
+    border-color: #1e293b;
+}
+
+.title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.dark .title {
+    color: #f1f5f9;
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+/* Category */
+.category {
+    margin-bottom: 0.5rem;
+}
+
+.categoryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s;
+}
+
+.categoryHeader:hover {
+    background: #f1f5f9;
+}
+
+.dark .categoryHeader {
+    color: #94a3b8;
+}
+
+.dark .categoryHeader:hover {
+    background: #334155;
+}
+
+.chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
+}
+
+.chevron.collapsed {
+    transform: rotate(-90deg);
+}
+
+/* Shape Grid */
+.shapeGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.shapeButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 0.75rem;
+    cursor: grab;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shapeButton:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.shapeButton:active {
+    cursor: grabbing;
+    transform: translateY(0);
+}
+
+.dark .shapeButton {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.dark .shapeButton:hover {
+    background: #334155;
+    border-color: #475569;
+}
+
+.shapeIcon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.shapeLabel {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #475569;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.dark .shapeLabel {
+    color: #94a3b8;
+}
+
+/* Arrow List */
+.arrowList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.25rem 0;
+}
+
+.arrowButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+}
+
+.arrowButton:hover {
+    background: #e5e7eb;
+    border-color: #cbd5e1;
+}
+
+.arrowButton.selected {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.dark .arrowButton {
+    background: #334155;
+}
+
+.dark .arrowButton:hover {
+    background: #475569;
+    border-color: #64748b;
+}
+
+.dark .arrowButton.selected {
+    background: #1e293b;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.arrowIcon {
+    width: 40px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.arrowLabel {
+    font-size: 0.625rem;
+    color: #64748b;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dark .arrowLabel {
+    color: #94a3b8;
+}
+
+/* Scrollbar */
+.content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.dark .content::-webkit-scrollbar-thumb {
+    background: #475569;
+}

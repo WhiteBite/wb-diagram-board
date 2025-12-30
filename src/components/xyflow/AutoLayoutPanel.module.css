@@ -1,0 +1,230 @@
+/**
+ * AutoLayoutPanel - Styles for auto-layout panel
+ */
+
+/* =============================================================================
+   Panel Container
+   ============================================================================= */
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: var(--xyflow-panel-bg, rgba(255, 255, 255, 0.95));
+    border: 1px solid var(--xyflow-panel-border, #e5e7eb);
+    border-radius: 0.75rem;
+    box-shadow:
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    min-width: 12rem;
+}
+
+.panel.dark {
+    background-color: var(--xyflow-panel-bg-dark, rgba(30, 41, 59, 0.95));
+    border-color: var(--xyflow-panel-border-dark, #334155);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* =============================================================================
+   Header
+   ============================================================================= */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--xyflow-panel-border, #e5e7eb);
+}
+
+.dark .header {
+    border-color: var(--xyflow-panel-border-dark, #334155);
+}
+
+.title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--xyflow-text-primary, #1e293b);
+    margin: 0;
+}
+
+.dark .title {
+    color: var(--xyflow-text-primary-dark, #f1f5f9);
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.25rem;
+    background-color: transparent;
+    color: var(--xyflow-text-secondary, #64748b);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.closeButton:hover {
+    background-color: var(--xyflow-hover-bg, rgba(0, 0, 0, 0.05));
+    color: var(--xyflow-text-primary, #1e293b);
+}
+
+.dark .closeButton {
+    color: var(--xyflow-text-secondary-dark, #94a3b8);
+}
+
+.dark .closeButton:hover {
+    background-color: var(--xyflow-hover-bg-dark, rgba(255, 255, 255, 0.1));
+    color: var(--xyflow-text-primary-dark, #f1f5f9);
+}
+
+.closeButton svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* =============================================================================
+   Direction Buttons
+   ============================================================================= */
+
+.directionGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.directionButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    border: 1px solid var(--xyflow-panel-border, #e5e7eb);
+    border-radius: 0.5rem;
+    background-color: transparent;
+    color: var(--xyflow-text-secondary, #64748b);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease;
+    font-family: inherit;
+    font-size: 0.75rem;
+}
+
+.directionButton:hover {
+    background-color: var(--xyflow-hover-bg, rgba(99, 102, 241, 0.08));
+    border-color: var(--xyflow-accent, #6366f1);
+    color: var(--xyflow-accent, #6366f1);
+}
+
+.directionButton:active {
+    transform: scale(0.98);
+}
+
+.directionButton:focus-visible {
+    outline: 2px solid var(--xyflow-accent, #6366f1);
+    outline-offset: 2px;
+}
+
+.dark .directionButton {
+    border-color: var(--xyflow-panel-border-dark, #334155);
+    color: var(--xyflow-text-secondary-dark, #94a3b8);
+}
+
+.dark .directionButton:hover {
+    background-color: var(--xyflow-hover-bg-dark, rgba(129, 140, 248, 0.15));
+    border-color: var(--xyflow-accent-dark, #818cf8);
+    color: var(--xyflow-accent-dark, #818cf8);
+}
+
+.directionButton svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.directionLabel {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+/* =============================================================================
+   Apply Button
+   ============================================================================= */
+
+.applyButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: var(--xyflow-accent, #6366f1);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        transform 0.1s ease,
+        box-shadow 0.15s ease;
+}
+
+.applyButton:hover {
+    background-color: var(--xyflow-accent-hover, #4f46e5);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+.applyButton:active {
+    transform: scale(0.98);
+}
+
+.applyButton:focus-visible {
+    outline: 2px solid var(--xyflow-accent, #6366f1);
+    outline-offset: 2px;
+}
+
+.applyButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dark .applyButton {
+    background-color: var(--xyflow-accent-dark, #818cf8);
+}
+
+.dark .applyButton:hover {
+    background-color: var(--xyflow-accent-hover-dark, #6366f1);
+    box-shadow: 0 2px 8px rgba(129, 140, 248, 0.4);
+}
+
+.applyButton svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* =============================================================================
+   Reduced Motion
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .directionButton,
+    .applyButton,
+    .closeButton {
+        transition: none;
+    }
+}
