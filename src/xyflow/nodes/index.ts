@@ -9,8 +9,10 @@ import { EllipseNode } from './EllipseNode';
 import { DiamondNode } from './DiamondNode';
 import { TextNode } from './TextNode';
 import { StickyNode } from './StickyNode';
+import { CommentNode } from './CommentNode';
 import { SwimlaneNode } from './SwimlaneNode';
 import { GroupNode } from './GroupNode';
+import { FrameNode } from './FrameNode';
 import { ImageNode } from './ImageNode';
 import {
     HexagonNode,
@@ -52,10 +54,12 @@ export const nodeTypes = {
     // Text & Notes
     text: TextNode,
     sticky: StickyNode,
+    comment: CommentNode,
 
     // Containers
     swimlane: SwimlaneNode,
     group: GroupNode,
+    frame: FrameNode,
 
     // Media
     image: ImageNode,
@@ -67,8 +71,10 @@ export { EllipseNode } from './EllipseNode';
 export { DiamondNode } from './DiamondNode';
 export { TextNode } from './TextNode';
 export { StickyNode } from './StickyNode';
+export { CommentNode } from './CommentNode';
 export { SwimlaneNode } from './SwimlaneNode';
 export { GroupNode } from './GroupNode';
+export { FrameNode } from './FrameNode';
 export { ImageNode } from './ImageNode';
 export {
     HexagonNode,

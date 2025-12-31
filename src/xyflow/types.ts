@@ -26,8 +26,10 @@ export type DiagramNodeType =
     | 'note'
     | 'text'
     | 'sticky'
+    | 'comment'
     | 'swimlane'
     | 'group'
+    | 'frame'
     | 'table'
     | 'checklist'
     | 'code'
@@ -91,6 +93,9 @@ export interface DiagramNodeData {
     // Code-specific
     codeContent?: string;
     codeLanguage?: string;
+    // Comment-specific
+    commentAuthor?: string;
+    commentResolved?: boolean;
     // Dynamic ports
     customPorts?: CustomPort[];
     // Index signature for XY Flow compatibility
@@ -202,8 +207,10 @@ export const DEFAULT_NODE_SIZE = {
     note: { width: 180, height: 120 },
     text: { width: 200, height: 50 },
     sticky: { width: 200, height: 180 },
+    comment: { width: 200, height: 120 },
     swimlane: { width: 450, height: 650 },
     group: { width: 450, height: 350 },
+    frame: { width: 400, height: 300 },
     table: { width: 350, height: 250 },
     checklist: { width: 250, height: 220 },
     code: { width: 380, height: 240 },
@@ -229,8 +236,10 @@ export const MIN_NODE_SIZE: Record<string, { width: number; height: number }> = 
     'rounded-rectangle': { width: 80, height: 40 },
     'text': { width: 100, height: 30 },
     'sticky': { width: 150, height: 100 },
+    'comment': { width: 180, height: 100 },
     'swimlane': { width: 150, height: 200 },
     'group': { width: 200, height: 150 },
+    'frame': { width: 200, height: 150 },
     'table': { width: 200, height: 120 },
     'checklist': { width: 180, height: 100 },
     'code': { width: 200, height: 100 },

@@ -9,6 +9,7 @@
  */
 
 import { toPng, toSvg } from 'html-to-image';
+import { jsPDF } from 'jspdf';
 import type { DiagramNode, DiagramEdge } from '../xyflow/types';
 
 // =============================================================================
@@ -26,6 +27,16 @@ export interface ExportOptions {
     scale?: number;
     /** Filter function to exclude elements */
     filter?: (node: HTMLElement) => boolean;
+}
+
+export type PdfPageSize = 'a4' | 'letter';
+export type PdfOrientation = 'portrait' | 'landscape';
+
+export interface PdfExportOptions extends ExportOptions {
+    /** Page size for PDF */
+    pageSize?: PdfPageSize;
+    /** Page orientation */
+    orientation?: PdfOrientation;
 }
 
 export interface ExportResult {
@@ -185,6 +196,114 @@ export async function exportToSvg(
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
         console.error('[exportToSvg] Failed:', error);
+        return { success: false, error: message };
+    }
+}
+
+// =============================================================================
+// PDF Export
+// =============================================================================
+
+/** Page dimensions in mm */
+const PAGE_SIZES = {
+    a4: { width: 210, height: 297 },
+    letter: { width: 215.9, height: 279.4 },
+} as const;
+
+/**
+ * Export the flow element to PDF
+ * 
+ * @param flowElement - The ReactFlow container element
+ * @param filename - Output filename (default: 'diagram.pdf')
+ * @param options - PDF export options
+ */
+export async function exportToPdf(
+    flowElement: HTMLElement,
+    filename: string = 'diagram.pdf',
+    options: PdfExportOptions = {}
+): Promise<ExportResult> {
+    const opts = { ...DEFAULT_EXPORT_OPTIONS, ...options };
+    const pageSize = options.pageSize ?? 'a4';
+    const orientation = options.orientation ?? 'landscape';
+
+    try {
+        // Find the viewport element inside ReactFlow
+        const viewport = flowElement.querySelector('.react-flow__viewport') as HTMLElement;
+        if (!viewport) {
+            throw new Error('Could not find ReactFlow viewport');
+        }
+
+        // Generate PNG data URL
+        const dataUrl = await toPng(viewport, {
+            backgroundColor: opts.backgroundColor,
+            pixelRatio: opts.scale,
+            quality: opts.quality,
+            filter: (node) => {
+                const className = node.className?.toString() ?? '';
+                if (
+                    className.includes('react-flow__controls') ||
+                    className.includes('react-flow__minimap') ||
+                    className.includes('react-flow__attribution') ||
+                    className.includes('react-flow__background')
+                ) {
+                    return false;
+                }
+                return opts.filter(node as HTMLElement);
+            },
+        });
+
+        // Get page dimensions
+        const pageDims = PAGE_SIZES[pageSize];
+        const pageWidth = orientation === 'landscape' ? pageDims.height : pageDims.width;
+        const pageHeight = orientation === 'landscape' ? pageDims.width : pageDims.height;
+
+        // Create PDF
+        const pdf = new jsPDF({
+            orientation,
+            unit: 'mm',
+            format: pageSize,
+        });
+
+        // Load image to get dimensions
+        const img = new Image();
+        await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = dataUrl;
+        });
+
+        // Calculate dimensions to fit image on page with padding
+        const pdfPadding = opts.padding ? opts.padding * 0.264583 : 5; // Convert px to mm (1px ≈ 0.264583mm)
+        const availableWidth = pageWidth - pdfPadding * 2;
+        const availableHeight = pageHeight - pdfPadding * 2;
+
+        const imgAspect = img.width / img.height;
+        const pageAspect = availableWidth / availableHeight;
+
+        let imgWidth: number;
+        let imgHeight: number;
+
+        if (imgAspect > pageAspect) {
+            // Image is wider than page
+            imgWidth = availableWidth;
+            imgHeight = availableWidth / imgAspect;
+        } else {
+            // Image is taller than page
+            imgHeight = availableHeight;
+            imgWidth = availableHeight * imgAspect;
+        }
+
+        // Center image on page
+        const x = (pageWidth - imgWidth) / 2;
+        const y = (pageHeight - imgHeight) / 2;
+
+        pdf.addImage(dataUrl, 'PNG', x, y, imgWidth, imgHeight);
+        pdf.save(filename);
+
+        return { success: true };
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error('[exportToPdf] Failed:', error);
         return { success: false, error: message };
     }
 }

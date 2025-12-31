@@ -10,6 +10,7 @@
 
 import { memo, useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { useReactFlow } from '@xyflow/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useXYFlowStore } from '../../xyflow/store';
 import { useSmartConnection } from '../../hooks/useSmartConnection';
 import { Z_INDEX } from '../../xyflow/constants';
@@ -504,204 +505,210 @@ export const FloatingToolbar = memo(function FloatingToolbar({
     }
 
     return (
-        <div
-            ref={toolbarRef}
-            className={`${styles.toolbar} ${isDark ? styles.dark : ''}`}
-            style={{
-                position: 'fixed',
-                left: toolbarPosition.x,
-                top: toolbarPosition.y,
-                zIndex: Z_INDEX.CONTEXT_MENU + 10,
-            }}
-        >
-            {/* Single node tools */}
-            {isSingleSelection && (
-                <>
-                    {/* Fill color */}
-                    <div className={styles.toolGroup}>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => setShowFillPicker(!showFillPicker)}
-                            title="Fill color"
-                        >
-                            <span className={styles.colorIndicator} style={{ backgroundColor: currentFillColor }} />
-                            <FillIcon />
-                        </button>
-                        {showFillPicker && (
-                            <ColorPicker
-                                currentColor={currentFillColor}
-                                presetColors={PRESET_FILL_COLORS}
-                                onColorChange={handleFillColorChange}
-                                onClose={() => setShowFillPicker(false)}
-                                isDark={isDark}
-                            />
-                        )}
-                    </div>
-
-                    {/* Stroke color */}
-                    <div className={styles.toolGroup}>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => setShowStrokePicker(!showStrokePicker)}
-                            title="Stroke color"
-                        >
-                            <span
-                                className={styles.colorIndicator}
-                                style={{ backgroundColor: 'transparent', border: `2px solid ${currentStrokeColor}` }}
-                            />
-                            <StrokeIcon />
-                        </button>
-                        {showStrokePicker && (
-                            <ColorPicker
-                                currentColor={currentStrokeColor}
-                                presetColors={PRESET_STROKE_COLORS}
-                                onColorChange={handleStrokeColorChange}
-                                onClose={() => setShowStrokePicker(false)}
-                                isDark={isDark}
-                            />
-                        )}
-                    </div>
-
-                    <div className={styles.separator} />
-                </>
-            )}
-
-            {/* Multi-selection tools */}
-            {isMultiSelection && (
-                <>
-                    {/* Alignment */}
-                    <div className={styles.toolGroup}>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => alignNodes('left')}
-                            title="Align left"
-                        >
-                            <AlignLeftIcon />
-                        </button>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => alignNodes('center-h')}
-                            title="Align center horizontally"
-                        >
-                            <AlignCenterHIcon />
-                        </button>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => alignNodes('right')}
-                            title="Align right"
-                        >
-                            <AlignRightIcon />
-                        </button>
-                    </div>
-
-                    <div className={styles.toolGroup}>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => alignNodes('top')}
-                            title="Align top"
-                        >
-                            <AlignTopIcon />
-                        </button>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => alignNodes('center-v')}
-                            title="Align center vertically"
-                        >
-                            <AlignCenterVIcon />
-                        </button>
-                        <button
-                            className={styles.toolButton}
-                            onClick={() => alignNodes('bottom')}
-                            title="Align bottom"
-                        >
-                            <AlignBottomIcon />
-                        </button>
-                    </div>
-
-                    {/* Distribution (only for 3+ nodes) */}
-                    {selectedCount >= 3 && (
+        <AnimatePresence>
+            <motion.div
+                ref={toolbarRef}
+                className={`${styles.toolbar} ${isDark ? styles.dark : ''}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                    position: 'fixed',
+                    left: toolbarPosition.x,
+                    top: toolbarPosition.y,
+                    zIndex: Z_INDEX.CONTEXT_MENU + 10,
+                }}
+            >
+                {/* Single node tools */}
+                {isSingleSelection && (
+                    <>
+                        {/* Fill color */}
                         <div className={styles.toolGroup}>
                             <button
                                 className={styles.toolButton}
-                                onClick={() => distributeNodes('horizontal')}
-                                title="Distribute horizontally"
+                                onClick={() => setShowFillPicker(!showFillPicker)}
+                                title="Fill color"
                             >
-                                <DistributeHIcon />
+                                <span className={styles.colorIndicator} style={{ backgroundColor: currentFillColor }} />
+                                <FillIcon />
                             </button>
-                            <button
-                                className={styles.toolButton}
-                                onClick={() => distributeNodes('vertical')}
-                                title="Distribute vertically"
-                            >
-                                <DistributeVIcon />
-                            </button>
+                            {showFillPicker && (
+                                <ColorPicker
+                                    currentColor={currentFillColor}
+                                    presetColors={PRESET_FILL_COLORS}
+                                    onColorChange={handleFillColorChange}
+                                    onClose={() => setShowFillPicker(false)}
+                                    isDark={isDark}
+                                />
+                            )}
                         </div>
-                    )}
 
-                    {/* Grouping */}
-                    <div className={styles.toolGroup}>
-                        {canGroup() && (
-                            <button
-                                className={styles.toolButton}
-                                onClick={groupSelected}
-                                title="Group (Ctrl+G)"
-                            >
-                                <GroupIcon />
-                            </button>
-                        )}
-                        {canUngroup() && (
-                            <button
-                                className={styles.toolButton}
-                                onClick={ungroupSelected}
-                                title="Ungroup (Ctrl+Shift+G)"
-                            >
-                                <UngroupIcon />
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Smart Connection */}
-                    {canConnect && (
+                        {/* Stroke color */}
                         <div className={styles.toolGroup}>
                             <button
                                 className={styles.toolButton}
-                                onClick={connectSequential}
-                                title="Connect sequential (A → B → C)"
+                                onClick={() => setShowStrokePicker(!showStrokePicker)}
+                                title="Stroke color"
                             >
-                                <ConnectSequentialIcon />
+                                <span
+                                    className={styles.colorIndicator}
+                                    style={{ backgroundColor: 'transparent', border: `2px solid ${currentStrokeColor}` }}
+                                />
+                                <StrokeIcon />
+                            </button>
+                            {showStrokePicker && (
+                                <ColorPicker
+                                    currentColor={currentStrokeColor}
+                                    presetColors={PRESET_STROKE_COLORS}
+                                    onColorChange={handleStrokeColorChange}
+                                    onClose={() => setShowStrokePicker(false)}
+                                    isDark={isDark}
+                                />
+                            )}
+                        </div>
+
+                        <div className={styles.separator} />
+                    </>
+                )}
+
+                {/* Multi-selection tools */}
+                {isMultiSelection && (
+                    <>
+                        {/* Alignment */}
+                        <div className={styles.toolGroup}>
+                            <button
+                                className={styles.toolButton}
+                                onClick={() => alignNodes('left')}
+                                title="Align left"
+                            >
+                                <AlignLeftIcon />
                             </button>
                             <button
                                 className={styles.toolButton}
-                                onClick={connectToLast}
-                                title="Connect all to last"
+                                onClick={() => alignNodes('center-h')}
+                                title="Align center horizontally"
                             >
-                                <ConnectToLastIcon />
+                                <AlignCenterHIcon />
+                            </button>
+                            <button
+                                className={styles.toolButton}
+                                onClick={() => alignNodes('right')}
+                                title="Align right"
+                            >
+                                <AlignRightIcon />
                             </button>
                         </div>
-                    )}
 
-                    <div className={styles.separator} />
-                </>
-            )}
+                        <div className={styles.toolGroup}>
+                            <button
+                                className={styles.toolButton}
+                                onClick={() => alignNodes('top')}
+                                title="Align top"
+                            >
+                                <AlignTopIcon />
+                            </button>
+                            <button
+                                className={styles.toolButton}
+                                onClick={() => alignNodes('center-v')}
+                                title="Align center vertically"
+                            >
+                                <AlignCenterVIcon />
+                            </button>
+                            <button
+                                className={styles.toolButton}
+                                onClick={() => alignNodes('bottom')}
+                                title="Align bottom"
+                            >
+                                <AlignBottomIcon />
+                            </button>
+                        </div>
 
-            {/* Common tools */}
-            <div className={styles.toolGroup}>
-                <button
-                    className={styles.toolButton}
-                    onClick={duplicateSelected}
-                    title="Duplicate (Ctrl+D)"
-                >
-                    <DuplicateIcon />
-                </button>
-                <button
-                    className={`${styles.toolButton} ${styles.danger}`}
-                    onClick={deleteSelected}
-                    title="Delete (Del)"
-                >
-                    <DeleteIcon />
-                </button>
-            </div>
-        </div>
+                        {/* Distribution (only for 3+ nodes) */}
+                        {selectedCount >= 3 && (
+                            <div className={styles.toolGroup}>
+                                <button
+                                    className={styles.toolButton}
+                                    onClick={() => distributeNodes('horizontal')}
+                                    title="Distribute horizontally"
+                                >
+                                    <DistributeHIcon />
+                                </button>
+                                <button
+                                    className={styles.toolButton}
+                                    onClick={() => distributeNodes('vertical')}
+                                    title="Distribute vertically"
+                                >
+                                    <DistributeVIcon />
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Grouping */}
+                        <div className={styles.toolGroup}>
+                            {canGroup() && (
+                                <button
+                                    className={styles.toolButton}
+                                    onClick={groupSelected}
+                                    title="Group (Ctrl+G)"
+                                >
+                                    <GroupIcon />
+                                </button>
+                            )}
+                            {canUngroup() && (
+                                <button
+                                    className={styles.toolButton}
+                                    onClick={ungroupSelected}
+                                    title="Ungroup (Ctrl+Shift+G)"
+                                >
+                                    <UngroupIcon />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Smart Connection */}
+                        {canConnect && (
+                            <div className={styles.toolGroup}>
+                                <button
+                                    className={styles.toolButton}
+                                    onClick={connectSequential}
+                                    title="Connect sequential (A → B → C)"
+                                >
+                                    <ConnectSequentialIcon />
+                                </button>
+                                <button
+                                    className={styles.toolButton}
+                                    onClick={connectToLast}
+                                    title="Connect all to last"
+                                >
+                                    <ConnectToLastIcon />
+                                </button>
+                            </div>
+                        )}
+
+                        <div className={styles.separator} />
+                    </>
+                )}
+
+                {/* Common tools */}
+                <div className={styles.toolGroup}>
+                    <button
+                        className={styles.toolButton}
+                        onClick={duplicateSelected}
+                        title="Duplicate (Ctrl+D)"
+                    >
+                        <DuplicateIcon />
+                    </button>
+                    <button
+                        className={`${styles.toolButton} ${styles.danger}`}
+                        onClick={deleteSelected}
+                        title="Delete (Del)"
+                    >
+                        <DeleteIcon />
+                    </button>
+                </div>
+            </motion.div>
+        </AnimatePresence>
     );
 });
 

@@ -7,7 +7,8 @@
  */
 
 import { memo, useCallback } from 'react';
-import { Handle, Position, NodeResizer, type NodeProps } from '@xyflow/react';
+import { Position, NodeResizer, type NodeProps } from '@xyflow/react';
+import { motion } from 'framer-motion';
 import type { DiagramNode } from '../types';
 import { DEFAULT_TEXT_STYLE, MIN_NODE_SIZE } from '../types';
 import { QuickAddHandle } from '../../components/xyflow/QuickAddHandle';
@@ -380,7 +381,7 @@ interface ShapeNodeProps extends NodeProps<DiagramNode> {
 }
 
 export const ShapeNodeBase = memo(({ id, data, selected, shapeType }: ShapeNodeProps) => {
-    const { label = '', style, textStyle } = data ?? {};
+    const { label = '', textStyle } = data ?? {};
 
     const onQuickAdd = useCallback((position: Position) => {
         window.dispatchEvent(new CustomEvent('quickAdd', {
@@ -413,7 +414,10 @@ export const ShapeNodeBase = memo(({ id, data, selected, shapeType }: ShapeNodeP
                 lineStyle={{ borderColor: 'var(--theme-primary, #3b82f6)' }}
                 handleStyle={{ backgroundColor: 'var(--theme-primary, #3b82f6)', borderColor: 'var(--theme-primary, #3b82f6)' }}
             />
-            <div
+            <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 style={{
                     width: '100%',
                     height: '100%',
@@ -478,7 +482,7 @@ export const ShapeNodeBase = memo(({ id, data, selected, shapeType }: ShapeNodeP
                         {parseMarkdown(label)}
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </>
     );
 });

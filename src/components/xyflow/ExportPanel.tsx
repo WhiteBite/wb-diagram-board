@@ -24,12 +24,14 @@ import { xyflowToIR } from '../../adapters';
 import {
     exportToPng,
     exportToSvg,
+    exportToPdf,
     exportToJson,
     exportToMermaid,
     exportToPlantUML,
     exportToDrawio,
     getTimestampedFilename,
 } from '../../utils/xyflow-export';
+import type { PdfPageSize, PdfOrientation } from '../../utils/xyflow-export';
 import type { DiagramNode, DiagramEdge } from '../../xyflow/types';
 import styles from './ExportPanel.module.css';
 
@@ -37,7 +39,7 @@ import styles from './ExportPanel.module.css';
 // Types
 // =============================================================================
 
-export type ExportFormat = 'png' | 'svg' | 'json' | 'mermaid' | 'plantuml' | 'drawio';
+export type ExportFormat = 'png' | 'svg' | 'pdf' | 'json' | 'mermaid' | 'plantuml' | 'drawio';
 export type ExportScope = 'all' | 'selection' | 'visible';
 export type ExportScale = 1 | 2 | 3;
 
@@ -53,6 +55,8 @@ interface ExportSettings {
     scale: ExportScale;
     padding: number;
     transparentBg: boolean;
+    pdfPageSize: PdfPageSize;
+    pdfOrientation: PdfOrientation;
 }
 
 export interface ExportPanelProps {
@@ -71,6 +75,7 @@ export interface ExportPanelProps {
 const FORMAT_OPTIONS: FormatOption[] = [
     { id: 'png', label: 'PNG', icon: '🖼️' },
     { id: 'svg', label: 'SVG', icon: '📐' },
+    { id: 'pdf', label: 'PDF', icon: '📑' },
     { id: 'json', label: 'JSON', icon: '📄' },
 ];
 
@@ -82,6 +87,8 @@ const DEFAULT_SETTINGS: ExportSettings = {
     scale: 2,
     padding: 20,
     transparentBg: false,
+    pdfPageSize: 'a4',
+    pdfOrientation: 'landscape',
 };
 
 const PREVIEW_HEIGHT = 160;
@@ -354,6 +361,21 @@ export function ExportPanel({
                     break;
                 }
 
+                case 'pdf': {
+                    const flowElement = document.querySelector('.react-flow') as HTMLElement;
+                    if (!flowElement) throw new Error('Could not find ReactFlow element');
+
+                    const result = await exportToPdf(flowElement, `diagram-${timestamp}pdf`, {
+                        backgroundColor: bgColor,
+                        scale: settings.scale,
+                        padding: settings.padding,
+                        pageSize: settings.pdfPageSize,
+                        orientation: settings.pdfOrientation,
+                    });
+                    if (!result.success) throw new Error(result.error);
+                    break;
+                }
+
                 case 'json': {
                     const result = exportToJson(exportNodes, exportEdges, `diagram-${timestamp}json`);
                     if (!result.success) throw new Error(result.error);
@@ -568,13 +590,13 @@ export function ExportPanel({
                     </div>
                 </div>
 
-                {/* Settings (only for PNG/SVG) */}
-                {(settings.format === 'png' || settings.format === 'svg') && (
+                {/* Settings (only for PNG/SVG/PDF) */}
+                {(settings.format === 'png' || settings.format === 'svg' || settings.format === 'pdf') && (
                     <div className={styles.settingsSection}>
                         <span className={styles.settingsLabel}>Settings</span>
 
-                        {/* Scale (PNG only) */}
-                        {settings.format === 'png' && (
+                        {/* Scale (PNG/PDF only) */}
+                        {(settings.format === 'png' || settings.format === 'pdf') && (
                             <div className={styles.settingRow}>
                                 <span className={styles.settingName}>Quality</span>
                                 <div className={styles.qualityButtons}>
@@ -587,6 +609,48 @@ export function ExportPanel({
                                             {scale}x
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PDF Page Size */}
+                        {settings.format === 'pdf' && (
+                            <div className={styles.settingRow}>
+                                <span className={styles.settingName}>Page Size</span>
+                                <div className={styles.qualityButtons}>
+                                    <button
+                                        className={`${styles.qualityButton} ${settings.pdfPageSize === 'a4' ? styles.qualityButtonActive : ''}`}
+                                        onClick={() => updateSetting('pdfPageSize', 'a4')}
+                                    >
+                                        A4
+                                    </button>
+                                    <button
+                                        className={`${styles.qualityButton} ${settings.pdfPageSize === 'letter' ? styles.qualityButtonActive : ''}`}
+                                        onClick={() => updateSetting('pdfPageSize', 'letter')}
+                                    >
+                                        Letter
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PDF Orientation */}
+                        {settings.format === 'pdf' && (
+                            <div className={styles.settingRow}>
+                                <span className={styles.settingName}>Orientation</span>
+                                <div className={styles.qualityButtons}>
+                                    <button
+                                        className={`${styles.qualityButton} ${settings.pdfOrientation === 'landscape' ? styles.qualityButtonActive : ''}`}
+                                        onClick={() => updateSetting('pdfOrientation', 'landscape')}
+                                    >
+                                        Landscape
+                                    </button>
+                                    <button
+                                        className={`${styles.qualityButton} ${settings.pdfOrientation === 'portrait' ? styles.qualityButtonActive : ''}`}
+                                        onClick={() => updateSetting('pdfOrientation', 'portrait')}
+                                    >
+                                        Portrait
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -607,16 +671,18 @@ export function ExportPanel({
                             </div>
                         </div>
 
-                        {/* Transparent background */}
-                        <div className={styles.settingRow}>
-                            <span className={styles.settingName}>Transparent background</span>
-                            <input
-                                type="checkbox"
-                                className={styles.checkbox}
-                                checked={settings.transparentBg}
-                                onChange={(e) => updateSetting('transparentBg', e.target.checked)}
-                            />
-                        </div>
+                        {/* Transparent background (PNG/SVG only) */}
+                        {(settings.format === 'png' || settings.format === 'svg') && (
+                            <div className={styles.settingRow}>
+                                <span className={styles.settingName}>Transparent background</span>
+                                <input
+                                    type="checkbox"
+                                    className={styles.checkbox}
+                                    checked={settings.transparentBg}
+                                    onChange={(e) => updateSetting('transparentBg', e.target.checked)}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
