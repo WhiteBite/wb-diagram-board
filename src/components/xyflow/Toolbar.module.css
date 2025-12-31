@@ -255,3 +255,66 @@
         padding: 0.375rem;
     }
 }
+
+/* =============================================================================
+   Zoom Controls
+   ============================================================================= */
+
+.zoomSelector {
+    display: flex;
+    align-items: center;
+}
+
+.zoomSelect {
+    appearance: none;
+    width: 4rem;
+    height: 2.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--xyflow-toolbar-border, #e5e7eb);
+    border-radius: 0.5rem;
+    background-color: var(--xyflow-toolbar-bg, rgba(255, 255, 255, 0.95));
+    color: var(--xyflow-tool-color, #64748b);
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: inherit;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    outline: none;
+}
+
+.zoomSelect:hover {
+    background-color: var(--xyflow-tool-hover-bg, rgba(99, 102, 241, 0.08));
+    border-color: var(--xyflow-accent, #6366f1);
+    color: var(--xyflow-tool-hover-color, #6366f1);
+}
+
+.zoomSelect:focus-visible {
+    outline: 2px solid var(--xyflow-accent, #6366f1);
+    outline-offset: 2px;
+}
+
+.zoomSelect.dark {
+    background-color: var(--xyflow-toolbar-bg-dark, rgba(30, 41, 59, 0.95));
+    border-color: var(--xyflow-toolbar-border-dark, #334155);
+    color: var(--xyflow-tool-color-dark, #94a3b8);
+}
+
+.zoomSelect.dark:hover {
+    background-color: var(--xyflow-tool-hover-bg-dark, rgba(129, 140, 248, 0.15));
+    border-color: var(--xyflow-accent-dark, #818cf8);
+    color: var(--xyflow-tool-hover-color-dark, #a5b4fc);
+}
+
+.zoomSelect option {
+    background-color: var(--xyflow-toolbar-bg, #ffffff);
+    color: var(--xyflow-tool-color, #64748b);
+}
+
+.zoomSelect.dark option {
+    background-color: var(--xyflow-toolbar-bg-dark, #1e293b);
+    color: var(--xyflow-tool-color-dark, #94a3b8);
+}

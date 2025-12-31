@@ -39,6 +39,8 @@ export interface UseKeyboardShortcutsOptions {
     onConnectSequential?: () => void;
     /** Called when Ctrl+Shift+L is pressed (auto-layout / Tidy Up) */
     onAutoLayout?: () => void;
+    /** Called when Ctrl+F is pressed (search) */
+    onSearch?: () => void;
     /** Whether shortcuts are enabled (default: true) */
     enabled?: boolean;
 }
@@ -198,6 +200,13 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
             if (isCtrl && code === 'KeyL' && isShift && !isAlt && optionsRef.current.onAutoLayout) {
                 event.preventDefault();
                 optionsRef.current.onAutoLayout();
+                return;
+            }
+
+            // Ctrl+F - Search
+            if (isCtrl && code === 'KeyF' && !isShift && !isAlt && optionsRef.current.onSearch) {
+                event.preventDefault();
+                optionsRef.current.onSearch();
                 return;
             }
         },

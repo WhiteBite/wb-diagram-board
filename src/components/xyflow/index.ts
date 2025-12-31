@@ -89,3 +89,24 @@ export type { FloatingToolbarProps } from './FloatingToolbar';
 
 export { RadialMenu } from './RadialMenu';
 export type { RadialMenuProps, RadialMenuContext } from './RadialMenu';
+
+// =============================================================================
+// Search Panel
+// =============================================================================
+
+export { SearchPanel } from './SearchPanel';
+export type { SearchPanelProps } from './SearchPanel';
+
+// =============================================================================
+// History Panel
+// =============================================================================
+
+export { HistoryPanel } from './HistoryPanel';
+export type { HistoryPanelProps } from './HistoryPanel';
+
+// =============================================================================
+// Template Library
+// =============================================================================
+
+export { TemplateLibrary } from './TemplateLibrary';
+export type { TemplateLibraryProps } from './TemplateLibrary';

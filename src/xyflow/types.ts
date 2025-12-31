@@ -30,7 +30,8 @@ export type DiagramNodeType =
     | 'group'
     | 'table'
     | 'checklist'
-    | 'code';
+    | 'code'
+    | 'image';
 
 // =============================================================================
 // Sticky Colors
@@ -206,6 +207,7 @@ export const DEFAULT_NODE_SIZE = {
     table: { width: 350, height: 250 },
     checklist: { width: 250, height: 220 },
     code: { width: 380, height: 240 },
+    image: { width: 200, height: 150 },
 } as const;
 
 /**
@@ -232,4 +234,5 @@ export const MIN_NODE_SIZE: Record<string, { width: number; height: number }> = 
     'table': { width: 200, height: 120 },
     'checklist': { width: 180, height: 100 },
     'code': { width: 200, height: 100 },
+    'image': { width: 50, height: 50 },
 };

@@ -1,0 +1,131 @@
+наа
+/**
+ * HistoryPanel - Glassmorphism styles for history visualization
+ *
+ * Fe
+ * - Glassmorphism background with blur
+ * - radient(135deg, rgba(129, 140, 248, 0.25), rgba(167, 139, 250, 0.2));
+}
+
+.dark .itemIcon {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.dark .itemCurrent .itemIcon {
+    background: rgba(129, 140, 248, 0.25);
+}
+
+.dark .itemDescription {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .itemTime {
+    color: var(--color-text-muted-dark, #64748b);
+}
+
+.dark .currentBadge {
+    color: var(--color-primary-dark, #818cf8);
+    background: rgba(129, 140, 248, 0.2);
+}
+
+.dark .emptyText {
+    color: var(--color-text-dark, #e2e8f0);
+}
+
+.dark .emptyHint {
+    color: var(--color-text-muted-dark, #64748b);
+}
+
+.dark .footer {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .clearButton {
+    color: var(--color-text-muted-dark, #94a3b8);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .clearButton:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+/* =============================================================================
+   Scrollbar
+   ============================================================================= */
+
+.listContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.listContainer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.listContainer::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.listContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.dark .listContainer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.dark .listContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* =============================================================================
+   Reduced Motion
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .panel,
+    .item,
+    .closeButton,
+    .clearButton {
+        transition: none;
+        animation: none;
+    }
+
+    .item:active {
+        transform: none;
+    }
+}
+
+/* =============================================================================
+   Responsive
+   ============================================================================= */
+
+@media (max-width: 640px) {
+    .panel {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 60vh;
+        border-radius: 1rem 1rem 0 0;
+        animation: panelSlideUp 0.25s ease-out;
+    }
+
+    @keyframes panelSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}

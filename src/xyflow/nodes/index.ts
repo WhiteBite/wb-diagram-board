@@ -11,6 +11,7 @@ import { TextNode } from './TextNode';
 import { StickyNode } from './StickyNode';
 import { SwimlaneNode } from './SwimlaneNode';
 import { GroupNode } from './GroupNode';
+import { ImageNode } from './ImageNode';
 import {
     HexagonNode,
     ParallelogramNode,
@@ -55,6 +56,9 @@ export const nodeTypes = {
     // Containers
     swimlane: SwimlaneNode,
     group: GroupNode,
+
+    // Media
+    image: ImageNode,
 } as const;
 
 // Export individual components
@@ -65,6 +69,7 @@ export { TextNode } from './TextNode';
 export { StickyNode } from './StickyNode';
 export { SwimlaneNode } from './SwimlaneNode';
 export { GroupNode } from './GroupNode';
+export { ImageNode } from './ImageNode';
 export {
     HexagonNode,
     ParallelogramNode,
