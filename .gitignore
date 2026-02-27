@@ -5,7 +5,16 @@ dist/
 .env
 .env.local
 
+# Local-only third-party samples / archives
+third-party-ignore!/
+
+# Windows oddities
+nul
+
 # Playwright
 test-results/
 playwright-report/
 playwright/.cache/
+
+third-party-ignore!/sources/
+third-party-ignore!/
