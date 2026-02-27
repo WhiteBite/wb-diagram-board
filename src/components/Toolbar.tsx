@@ -58,13 +58,14 @@ export const Toolbar = memo(function Toolbar({ position = 'left' }: ToolbarProps
     const isVertical = position === 'left';
 
     return (
-        <div className={`toolbar ${isVertical ? 'toolbar-left' : 'toolbar-top'}`}>
+        <div className={`toolbar ${isVertical ? 'toolbar-left' : 'toolbar-top'}`} data-testid="toolbar">
             {/* Undo/Redo */}
             <button
                 className="toolbar-button"
                 onClick={undo}
                 disabled={!canUndo}
                 title="Undo (Ctrl+Z)"
+                data-action="undo"
             >
                 <Undo2 size={20} />
             </button>
@@ -73,6 +74,7 @@ export const Toolbar = memo(function Toolbar({ position = 'left' }: ToolbarProps
                 onClick={redo}
                 disabled={!canRedo}
                 title="Redo (Ctrl+Y)"
+                data-action="redo"
             >
                 <Redo2 size={20} />
             </button>
@@ -86,6 +88,7 @@ export const Toolbar = memo(function Toolbar({ position = 'left' }: ToolbarProps
                     className={`toolbar-button ${activeTool === tool ? 'active' : ''}`}
                     onClick={() => setTool(tool)}
                     title={`${label}${shortcut ? ` (${shortcut})` : ''}`}
+                    data-tool={tool}
                 >
                     {icon}
                 </button>

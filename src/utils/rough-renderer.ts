@@ -160,7 +160,8 @@ export function generateRoughFreedrawSVG(
     element: FreedrawElement,
     rc: RoughSVG
 ): SVGGElement {
-    const { x, y, points, stroke } = element;
+    const { x, y, points, strokeColor, strokeWidth, strokeStyle = 'solid' } = element;
+    const stroke = { color: strokeColor, width: strokeWidth, style: strokeStyle };
     const options = getRoughOptions(stroke, { type: 'none', color: '' }, element.id.charCodeAt(0) * 1000);
     options.roughness = 0.5; // Less rough for freedraw
 

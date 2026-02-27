@@ -26,6 +26,7 @@ export function useKeyboard() {
     const toggleGrid = useCanvasStore((s) => s.toggleGrid);
     const bringToFront = useCanvasStore((s) => s.bringToFront);
     const sendToBack = useCanvasStore((s) => s.sendToBack);
+    const toggleLocked = useCanvasStore((s) => s.toggleLocked);
     const selectedIds = useCanvasStore((s) => s.selectedIds);
 
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -39,6 +40,8 @@ export function useKeyboard() {
         const key = e.key.toLowerCase();
 
         // Tool shortcuts (single keys)
+        // T key activates triangle tool (standard whiteboard shortcut)
+        // Text tool uses X key to avoid conflict
         if (!ctrl && !shift) {
             const toolMap: Record<string, Tool> = {
                 'v': 'select',
@@ -46,10 +49,11 @@ export function useKeyboard() {
                 'r': 'rectangle',
                 'o': 'ellipse',
                 'd': 'diamond',
+                't': 'triangle',  // T for triangle
                 'l': 'line',
                 'a': 'arrow',
                 'p': 'freedraw',
-                't': 'text',
+                'x': 'text',      // X for text (T is used for triangle)
                 's': 'sticky',
                 'f': 'frame',
                 'c': 'connector',
@@ -146,6 +150,14 @@ export function useKeyboard() {
                         sendToBack(selectedIds);
                     }
                     break;
+
+                case 'l':
+                    e.preventDefault();
+                    if (shift && selectedIds.length > 0) {
+                        // Ctrl+Shift+L to lock/unlock
+                        toggleLocked(selectedIds);
+                    }
+                    break;
             }
             return;
         }
@@ -173,7 +185,7 @@ export function useKeyboard() {
     }, [
         setTool, undo, redo, copy, cut, paste, deleteElements, selectAll,
         clearSelection, duplicateElements, zoomIn, zoomOut, zoomToFit,
-        resetZoom, toggleGrid, bringToFront, sendToBack, selectedIds
+        resetZoom, toggleGrid, bringToFront, sendToBack, toggleLocked, selectedIds
     ]);
 
     useEffect(() => {

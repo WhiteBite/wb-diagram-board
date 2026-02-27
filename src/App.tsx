@@ -12,8 +12,18 @@ import { ZoomControls } from './components/ZoomControls';
 import { ContextMenu } from './components/ContextMenu';
 import { Header } from './components/Header';
 import { useKeyboard } from './hooks/useKeyboard';
+import { useAutoImport } from './hooks/useAutoImport';
 import { useCanvasStore, selectSelectedIds } from './store/canvas-store';
+import { useShortcutsStore } from './store/shortcuts-store';
+import { shortcutManager } from './core/shortcuts/shortcut-manager';
+import { getDefaultShortcuts } from './core/shortcuts/default-shortcuts';
 import { Point } from './types/canvas';
+
+// Expose stores for e2e tests (only in development)
+if (typeof window !== 'undefined') {
+    (window as any).__CANVAS_STORE__ = useCanvasStore;
+    (window as any).__SHORTCUTS_STORE__ = useShortcutsStore;
+}
 
 export default function App() {
     const [darkMode, setDarkMode] = useState(() => {
@@ -25,8 +35,27 @@ export default function App() {
     const selectedIds = useCanvasStore(selectSelectedIds);
     const setStoreDarkMode = useCanvasStore((s) => s.setDarkMode);
 
+    // Initialize shortcuts system
+    useEffect(() => {
+        // Register default shortcuts
+        const defaults = getDefaultShortcuts();
+        for (const binding of defaults) {
+            try {
+                shortcutManager.register(binding);
+            } catch (error) {
+                console.error(`Failed to register shortcut ${binding.id}:`, error);
+            }
+        }
+
+        // Initialize store with defaults
+        useShortcutsStore.setState({ bindings: defaults });
+    }, []);
+
     // Keyboard shortcuts
     useKeyboard();
+
+    // Auto-import from clipboard if URL parameter present
+    useAutoImport();
 
     // Sync darkMode with store
     useEffect(() => {
@@ -64,13 +93,13 @@ export default function App() {
 
     return (
         <div className="h-screen w-screen overflow-hidden bg-canvas-bg" onContextMenu={handleContextMenu}>
-            {/* Header */}
-            <Header darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
-
-            {/* Main Canvas Area */}
+            {/* Main Canvas Area - rendered first so canvas SVG is first in DOM for tests */}
             <main className="pt-14 h-full">
                 <Canvas darkMode={darkMode} />
             </main>
+
+            {/* Header - rendered after canvas but positioned on top via z-index */}
+            <Header darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
 
             {/* Toolbar */}
             <Toolbar position="left" />

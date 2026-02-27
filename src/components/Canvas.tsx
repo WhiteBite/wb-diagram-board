@@ -6,11 +6,14 @@
 
 import { useRef, useCallback, useState, useEffect } from 'react';
 import { useCanvasStore, selectOrderedElements, selectTransform, selectActiveTool } from '../store/canvas-store';
+import { useGuidesStore, selectGuides, selectSnapPoints } from '../store/guides-store';
 import { Point, CanvasElement, ShapeElement, LineElement, ArrowElement, ConnectorElement, TextElement, StickyElement, FreedrawElement, FrameElement, createBaseElement, DEFAULT_TEXT_STYLE } from '../types/canvas';
 import { RoughElementRenderer } from './elements/RoughElementRenderer';
 import { SelectionOverlay } from './SelectionOverlay';
 import { Grid } from './Grid';
 import { TextEditor } from './TextEditor';
+import { GuidesRenderer } from './guides';
+import { useGuides } from '../hooks/useGuides';
 
 interface CanvasProps {
     className?: string;
@@ -33,6 +36,17 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
     const isPanning = useCanvasStore((s) => s.isPanning);
     const currentStroke = useCanvasStore((s) => s.currentStroke);
     const currentFill = useCanvasStore((s) => s.currentFill);
+
+    // Guides
+    const guides = useGuidesStore(selectGuides);
+    const snapPoints = useGuidesStore(selectSnapPoints);
+    const guidesConfig = useGuidesStore((s) => s.config);
+    const {
+        updateGuidesForElement,
+        updateSnapPointsForElement,
+        startDragging,
+        stopDragging,
+    } = useGuides();
 
     // Actions
     const setTransform = useCanvasStore((s) => s.setTransform);
@@ -340,6 +354,9 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                 console.log('[Canvas] Total elements to drag:', startPositions.size);
                 setDraggedElementStart(startPositions);
                 setDraggedElementOriginal(new Map(startPositions)); // Store for undo
+
+                // Start showing guides
+                startDragging();
             } else {
                 // Click on empty space - start selection box
                 console.log('[Canvas] Starting selection box at:', canvasPoint);
@@ -556,6 +573,17 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                 console.log('[Canvas] Updating element:', id, 'type:', el?.type, 'from:', startPos, 'to:', { x: newX, y: newY });
                 updateElementSilent(id, { x: newX, y: newY });
             });
+
+            // Update guides for the first dragged element
+            if (draggedElementStart.size > 0) {
+                const firstId = Array.from(draggedElementStart.keys())[0];
+                const draggedElement = elements.find(e => e.id === firstId);
+                if (draggedElement) {
+                    updateGuidesForElement(draggedElement, elements);
+                    updateSnapPointsForElement(draggedElement, elements);
+                }
+            }
+
             return;
         }
 
@@ -813,8 +841,10 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
             setDrawing(false);
         }
 
+        // Stop showing guides
+        stopDragging();
         setDragStart(null);
-    }, [isPanning, isDrawing, isDraggingElement, selectionBox, currentElement, elements, setPanning, setDrawing, addElement, setSelection, setActiveTool, updateFrameChildren, shiftClickedElementId, hasDragged]);
+    }, [isPanning, isDrawing, isDraggingElement, selectionBox, currentElement, elements, setPanning, setDrawing, addElement, setSelection, setActiveTool, updateFrameChildren, shiftClickedElementId, hasDragged, stopDragging]);
 
     // Get cursor class
     const getCursorClass = () => {
@@ -901,6 +931,14 @@ export function Canvas({ className = '', darkMode = false }: CanvasProps) {
                             isSelected={false}
                         />
                     )}
+
+                    {/* Alignment guides */}
+                    <GuidesRenderer
+                        guides={guides}
+                        snapPoints={snapPoints}
+                        transform={transform}
+                        visible={guidesConfig.showGuides && guides.length > 0}
+                    />
                 </g>
             </svg>
 

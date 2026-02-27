@@ -5,6 +5,10 @@ import path from 'path';
 export default defineConfig({
     plugins: [react()],
     base: process.env.BASE_URL || '/wb-diagram-board/',
+    server: {
+        port: 5179,
+        strictPort: true,
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),

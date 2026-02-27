@@ -133,8 +133,12 @@ export interface Binding {
 export interface FreedrawElement extends BaseElement {
     type: 'freedraw';
     points: Point[];
-    stroke: StrokeStyle;
-    simulatePressure: boolean;
+    strokeColor: string;
+    strokeWidth: number;
+    strokeStyle?: 'solid' | 'dashed' | 'dotted';
+    smoothing?: boolean;
+    simulatePressure?: boolean;
+    pressurePoints?: number[]; // Optional pressure values for each point
 }
 
 // Text element

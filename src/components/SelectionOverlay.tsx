@@ -4,9 +4,9 @@
  * Renders selection bounds and resize handles
  */
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useRef, useState, useEffect } from 'react';
 import { useCanvasStore, selectSelectedElements } from '../store/canvas-store';
-import { Transform, Bounds, ResizeHandle } from '../types/canvas';
+import { Transform, Bounds, ResizeHandle, CanvasElement, Point } from '../types/canvas';
 
 interface SelectionOverlayProps {
     transform: Transform;
@@ -14,12 +14,186 @@ interface SelectionOverlayProps {
 
 export const SelectionOverlay = memo(function SelectionOverlay({ transform }: SelectionOverlayProps) {
     const selectedElements = useCanvasStore(selectSelectedElements);
-    const setResizing = useCanvasStore((s) => s.setResizing);
+    const getElement = useCanvasStore((s) => (id: string) => s.elements[id]);
+    const updateElementSilent = useCanvasStore((s) => s.updateElementSilent);
+    const pushHistory = useCanvasStore((s) => s.pushHistory);
+    const snapToGrid = useCanvasStore((s) => s.snapToGrid);
+    const gridSize = useCanvasStore((s) => s.gridSize);
+    const updateFrameChildren = useCanvasStore((s) => s.updateFrameChildren);
+
+    // Use ref to always have latest transform without recreating callback
+    const transformRef = useRef(transform);
+    transformRef.current = transform;
+
+    // Local state for resize operation
+    const [resizeState, setResizeState] = useState<{
+        elementId: string;
+        handle: ResizeHandle;
+        initialElement: CanvasElement;
+        startPoint: Point;
+    } | null>(null);
+
+    // Convert screen coordinates to canvas coordinates
+    const screenToCanvas = useCallback((screenX: number, screenY: number): Point => {
+        const t = transformRef.current;
+        return {
+            x: (screenX - t.x) / t.scale,
+            y: (screenY - t.y) / t.scale,
+        };
+    }, []);
+
+    // Handle window mouse move during resize
+    useEffect(() => {
+        if (!resizeState) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            console.log('[SelectionOverlay] Resize mouse move');
+            const canvasPoint = screenToCanvas(e.clientX, e.clientY);
+            const { elementId, handle, initialElement, startPoint } = resizeState;
+
+            const dx = canvasPoint.x - startPoint.x;
+            const dy = canvasPoint.y - startPoint.y;
+
+            let newX = initialElement.x;
+            let newY = initialElement.y;
+            let newWidth = initialElement.width;
+            let newHeight = initialElement.height;
+
+            // Handle resize based on handle position
+            switch (handle) {
+                case 'nw':
+                    newX = initialElement.x + dx;
+                    newY = initialElement.y + dy;
+                    newWidth = initialElement.width - dx;
+                    newHeight = initialElement.height - dy;
+                    break;
+                case 'n':
+                    newY = initialElement.y + dy;
+                    newHeight = initialElement.height - dy;
+                    break;
+                case 'ne':
+                    newY = initialElement.y + dy;
+                    newWidth = initialElement.width + dx;
+                    newHeight = initialElement.height - dy;
+                    break;
+                case 'w':
+                    newX = initialElement.x + dx;
+                    newWidth = initialElement.width - dx;
+                    break;
+                case 'e':
+                    newWidth = initialElement.width + dx;
+                    break;
+                case 'sw':
+                    newX = initialElement.x + dx;
+                    newWidth = initialElement.width - dx;
+                    newHeight = initialElement.height + dy;
+                    break;
+                case 's':
+                    newHeight = initialElement.height + dy;
+                    break;
+                case 'se':
+                    newWidth = initialElement.width + dx;
+                    newHeight = initialElement.height + dy;
+                    break;
+            }
+
+            // Ensure minimum size
+            const minSize = 20;
+            if (newWidth < minSize) {
+                if (handle.includes('w')) newX = initialElement.x + initialElement.width - minSize;
+                newWidth = minSize;
+            }
+            if (newHeight < minSize) {
+                if (handle.includes('n')) newY = initialElement.y + initialElement.height - minSize;
+                newHeight = minSize;
+            }
+
+            // Snap to grid
+            if (snapToGrid) {
+                newX = Math.round(newX / gridSize) * gridSize;
+                newY = Math.round(newY / gridSize) * gridSize;
+                newWidth = Math.round(newWidth / gridSize) * gridSize;
+                newHeight = Math.round(newHeight / gridSize) * gridSize;
+            }
+
+            // Update element silently (no history entry yet)
+            updateElementSilent(elementId, { x: newX, y: newY, width: newWidth, height: newHeight });
+        };
+
+        const handleMouseUp = () => {
+            console.log('[SelectionOverlay] Resize mouse up');
+            if (resizeState) {
+                const { elementId, initialElement } = resizeState;
+                const currentElement = getElement(elementId);
+
+                if (currentElement) {
+                    // Create history entry with proper before/after states
+                    const before: Record<string, CanvasElement | null> = {
+                        [elementId]: initialElement
+                    };
+                    const after: Record<string, CanvasElement | null> = {
+                        [elementId]: { ...currentElement }
+                    };
+
+                    pushHistory({
+                        type: 'update',
+                        elementIds: [elementId],
+                        before,
+                        after
+                    });
+
+                    // If it's a frame, update children after resize
+                    if (currentElement.type === 'frame') {
+                        setTimeout(() => {
+                            updateFrameChildren(elementId);
+                        }, 0);
+                    }
+                }
+            }
+            setResizeState(null);
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [resizeState, screenToCanvas, updateElementSilent, pushHistory, getElement, snapToGrid, gridSize, updateFrameChildren]);
 
     const handleMouseDown = useCallback((handle: ResizeHandle) => (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setResizing(true, handle);
-    }, [setResizing]);
+        console.log('[SelectionOverlay] handleMouseDown called:', { handle, button: e.button });
+        e.preventDefault(); // Prevent text selection
+        e.stopPropagation(); // Don't let Canvas handle this
+
+        if (selectedElements.length !== 1) {
+            console.log('[SelectionOverlay] Not exactly 1 element selected:', selectedElements.length);
+            return;
+        }
+
+        const elementId = selectedElements[0].id;
+        const initialElement = getElement(elementId);
+        if (!initialElement) {
+            console.log('[SelectionOverlay] Element not found:', elementId);
+            return;
+        }
+        if (initialElement.locked) {
+            console.log('[SelectionOverlay] Element is locked:', elementId);
+            return;
+        }
+
+        console.log('[SelectionOverlay] Starting resize:', { handle, elementId, element: initialElement });
+
+        // Start resize with window-level handlers
+        const canvasPoint = screenToCanvas(e.clientX, e.clientY);
+        setResizeState({
+            elementId,
+            handle,
+            initialElement: { ...initialElement },
+            startPoint: canvasPoint,
+        });
+    }, [selectedElements, getElement, screenToCanvas]);
 
     if (selectedElements.length === 0) return null;
 
@@ -42,6 +216,7 @@ export const SelectionOverlay = memo(function SelectionOverlay({ transform }: Se
         <div className="pointer-events-none absolute inset-0">
             {/* Selection border */}
             <div
+                data-testid="selection-bounds"
                 className="absolute border-2 border-indigo-500"
                 style={{
                     left: screenBounds.x,
@@ -184,7 +359,9 @@ function Handle({ position, x, y, size, onMouseDown }: HandleProps) {
 
     return (
         <div
-            className="resize-handle pointer-events-auto"
+            className="absolute resize-handle pointer-events-auto"
+            data-testid="resize-handle"
+            data-position={position}
             style={{
                 left: x,
                 top: y,
@@ -201,7 +378,7 @@ function Handle({ position, x, y, size, onMouseDown }: HandleProps) {
 // Helper Functions
 // =============================================================================
 
-function getSelectionBounds(elements: { x: number; y: number; width: number; height: number }[]): Bounds | null {
+function getSelectionBounds(elements: CanvasElement[]): Bounds | null {
     if (elements.length === 0) return null;
 
     let minX = Infinity, minY = Infinity;

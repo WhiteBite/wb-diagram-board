@@ -16,6 +16,7 @@ export function TextEditor({ elementId, transform, onClose }: TextEditorProps) {
     const element = useCanvasStore((s) => s.elements[elementId]);
     const updateElement = useCanvasStore((s) => s.updateElement);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const textRef = useRef<string>('');
 
     const [text, setText] = useState(() => {
         if (!element) return '';
@@ -27,10 +28,37 @@ export function TextEditor({ elementId, transform, onClose }: TextEditorProps) {
         return '';
     });
 
+    // Keep textRef in sync with text state
     useEffect(() => {
-        textareaRef.current?.focus();
-        textareaRef.current?.select();
+        textRef.current = text;
+    }, [text]);
+
+    // Focus and select text when editor appears
+    useEffect(() => {
+        // Use requestAnimationFrame to ensure DOM is ready
+        requestAnimationFrame(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+                textareaRef.current.select();
+            }
+        });
     }, []);
+
+    // Save text when component unmounts
+    useEffect(() => {
+        return () => {
+            if (!element) return;
+
+            const finalText = textRef.current;
+            if (element.type === 'text') {
+                updateElement(elementId, { text: finalText } as Partial<TextElement>);
+            } else if (element.type === 'sticky') {
+                updateElement(elementId, { text: finalText } as Partial<StickyElement>);
+            } else if (['rectangle', 'ellipse', 'diamond', 'triangle'].includes(element.type)) {
+                updateElement(elementId, { text: finalText } as Partial<ShapeElement>);
+            }
+        };
+    }, [element, elementId, updateElement]);
 
     const handleSave = useCallback(() => {
         if (!element) return;
@@ -42,17 +70,41 @@ export function TextEditor({ elementId, transform, onClose }: TextEditorProps) {
         } else if (['rectangle', 'ellipse', 'diamond', 'triangle'].includes(element.type)) {
             updateElement(elementId, { text } as Partial<ShapeElement>);
         }
+
         onClose();
     }, [element, elementId, text, updateElement, onClose]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
+            e.preventDefault();
+            // Don't save on Escape, just close
             onClose();
-        } else if (e.key === 'Enter' && !e.shiftKey) {
+        } else if (e.key === 'Delete' || e.key === 'Backspace') {
+            // If textarea is empty or text is selected, allow normal delete behavior
+            const textarea = e.target as HTMLTextAreaElement;
+            const hasSelection = textarea.selectionStart !== textarea.selectionEnd;
+            const isEmpty = text.trim() === '';
+
+            // If there's selected text or cursor is not at start, let it delete text normally
+            if (hasSelection || textarea.selectionStart > 0 || !isEmpty) {
+                return; // Allow default behavior
+            }
+
+            // If empty and at start, delete the element itself
+            e.preventDefault();
+            onClose();
+            // Delete the element after closing editor
+            setTimeout(() => {
+                const deleteElements = useCanvasStore.getState().deleteElements;
+                deleteElements([elementId]);
+            }, 0);
+        } else if (e.key === 'Enter' && e.ctrlKey) {
+            // Ctrl+Enter to save
             e.preventDefault();
             handleSave();
         }
-    }, [onClose, handleSave]);
+        // Regular Enter creates new line (default textarea behavior)
+    }, [onClose, handleSave, text, elementId]);
 
     if (!element) return null;
 
@@ -74,6 +126,7 @@ export function TextEditor({ elementId, transform, onClose }: TextEditorProps) {
         >
             <textarea
                 ref={textareaRef}
+                data-testid={element.type === 'sticky' ? 'sticky-editor' : 'text-editor'}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKeyDown}
