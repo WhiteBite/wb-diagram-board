@@ -346,7 +346,7 @@ describe('irToXYFlow', () => {
 
             const result = irToXYFlow(diagram);
 
-            expect(result.nodes[0].data.width).toBe(160); // DEFAULT_NODE_SIZE.rectangle.width
+            expect(result.nodes[0].data.width).toBe(180); // DEFAULT_NODE_SIZE.rectangle.width
             expect(result.nodes[0].data.height).toBe(80); // DEFAULT_NODE_SIZE.rectangle.height
         });
     });
